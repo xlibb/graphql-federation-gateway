@@ -24,5 +24,4 @@ module io.xlibb.gateway {
     requires org.apache.commons.io;
     requires io.ballerina.formatter.core;
     requires org.slf4j;
-    requires commons.logging;
 }

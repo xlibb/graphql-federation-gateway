@@ -46,7 +46,6 @@ dependencies {
     implementation "commons-io:commons-io:${commonsIoVersion}"
     implementation "com.graphql-java:graphql-java:${graphqlJavaVersion}"
     implementation "com.graphql-java:graphql-java-extended-scalars:${graphqlJavaExtendedScalarVersion}"
-    implementation "commons-logging:commons-logging:${commonsLoggingVersion}" //TODO: check this
     testImplementation "org.testng:testng:${testngVersion}"
 }
 
