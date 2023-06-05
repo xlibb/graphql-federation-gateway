@@ -1,6 +1,7 @@
 package io.xlibb.gateway.graphql;
 
 import graphql.language.FieldDefinition;
+import graphql.language.InputValueDefinition;
 import graphql.language.ListType;
 import graphql.language.NonNullType;
 import graphql.language.Type;
@@ -14,6 +15,7 @@ import graphql.schema.GraphQLNamedType;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLScalarType;
 import graphql.schema.GraphQLSchema;
+import io.xlibb.gateway.exception.ValidationException;
 import io.xlibb.gateway.graphql.components.FieldType;
 
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ import static io.xlibb.gateway.graphql.Utils.getBallerinaTypeName;
 
 /**
  * Class includes the methods to read the GraphQL schema (SDL).
- * */
+ */
 public class SpecReader {
     /**
      * Get the object type names from the GraphQL schema.
@@ -66,9 +68,9 @@ public class SpecReader {
     /**
      * Gets the representation of Ballerina field type for a given GraphQL field type.
      *
-     * @param graphQLSchema     the object instance of the GraphQL schema (SDL)
-     * @param type              the field type
-     * @return                  the string representation of Ballerina type for a given GraphQL field type
+     * @param graphQLSchema the object instance of the GraphQL schema (SDL)
+     * @param type          the field type
+     * @return the string representation of Ballerina type for a given GraphQL field type
      */
     public static FieldType getFieldType(GraphQLSchema graphQLSchema, Type<?> type) {
         FieldType fieldType = new FieldType();
@@ -189,15 +191,20 @@ public class SpecReader {
      * @return the input object type fields map
      */
     public static Map<String, FieldType> getInputTypeFieldsMap(GraphQLSchema graphQLSchema,
-                                                               String inputObjectTypeName) {
+                                                               String inputObjectTypeName) throws ValidationException {
         Map<String, FieldType> inputTypeFieldsMap = new HashMap<>();
         if (graphQLSchema.getType(inputObjectTypeName) instanceof GraphQLInputObjectType) {
             GraphQLInputObjectType inputObjectType =
                     ((GraphQLInputObjectType) graphQLSchema.getType(inputObjectTypeName));
             if (inputObjectType != null) {
                 for (GraphQLInputObjectField field : inputObjectType.getFields()) {
+                    InputValueDefinition inputValueDefinition = field.getDefinition();
+                    if (inputValueDefinition == null) {
+                        throw new ValidationException("Field definition cannot be null");
+                    }
                     inputTypeFieldsMap.put(Utils.escapeIdentifier(field.getName()),
-                            SpecReader.getFieldType(graphQLSchema, field.getDefinition().getType()));
+                            SpecReader.getFieldType(graphQLSchema, inputValueDefinition.getType()));
+
                 }
             }
         }

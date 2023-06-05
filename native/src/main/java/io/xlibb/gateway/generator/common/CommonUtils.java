@@ -49,6 +49,7 @@ import io.ballerina.projects.JvmTarget;
 import io.ballerina.projects.PackageCompilation;
 import io.ballerina.projects.directory.BuildProject;
 import io.xlibb.gateway.exception.GatewayGenerationException;
+import io.xlibb.gateway.exception.ValidationException;
 import io.xlibb.gateway.graphql.SpecReader;
 import io.xlibb.gateway.graphql.components.JoinGraph;
 import org.apache.commons.io.IOUtils;
@@ -63,7 +64,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -172,8 +172,9 @@ public class CommonUtils {
 
         if (joinTypeDirectivesOnParent.size() == 1) {
             for (GraphQLAppliedDirectiveArgument argument : joinTypeDirectivesOnParent.get(0).getArguments()) {
-                if (argument.getName().equals("graph")) {
-                    return ((EnumValue) Objects.requireNonNull(argument.getArgumentValue().getValue())).getName();
+                Object value = argument.getArgumentValue().getValue();
+                if (argument.getName().equals("graph") && value instanceof EnumValue) {
+                    return ((EnumValue) value).getName();
                 }
             }
         }
@@ -206,7 +207,7 @@ public class CommonUtils {
      * @param graphQLSchema GraphQL schema
      * @return Map of join graphs
      */
-    public static Map<String, JoinGraph> getJoinGraphs(GraphQLSchema graphQLSchema) {
+    public static Map<String, JoinGraph> getJoinGraphs(GraphQLSchema graphQLSchema) throws ValidationException {
         Map<String, JoinGraph> joinGraphs = new HashMap<>();
         GraphQLType joinGraph = graphQLSchema.getType("join__Graph");
         if (joinGraph != null) {

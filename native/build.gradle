@@ -15,10 +15,13 @@
  *
  */
 
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     id 'java'
     id 'checkstyle'
     id 'com.github.spotbugs'
+    id 'de.undercouch.download'
 }
 
 apply plugin: "com.github.johnrengelman.shadow"
@@ -27,7 +30,6 @@ apply plugin: "jacoco"
 description = 'Ballerina - Federation Gateway'
 
 configurations {
-    balTools
     dist {
         transitive true
     }
@@ -37,25 +39,15 @@ dependencies {
     checkstyle project(':checkstyle')
     checkstyle "com.puppycrawl.tools:checkstyle:${checkstylePluginVersion}"
 
-    implementation group: 'org.ballerinalang', name: 'ballerina-lang', version: "${ballerinaLangVersion}"
-    implementation group: 'org.ballerinalang', name: 'ballerina-runtime', version: "${ballerinaLangVersion}"
     implementation "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
-    implementation "org.ballerinalang:ballerina-parser:${ballerinaLangVersion}"
     implementation "org.ballerinalang:ballerina-tools-api:${ballerinaLangVersion}"
-    implementation "org.ballerinalang:ballerina-cli:${ballerinaLangVersion}"
+    implementation "org.ballerinalang:ballerina-parser:${ballerinaLangVersion}"
     implementation "org.ballerinalang:formatter-core:${ballerinaLangVersion}"
-    implementation "io.ballerina.stdlib:graphql-commons:${stdlibGraphqlVersion}"
     implementation "commons-io:commons-io:${commonsIoVersion}"
     implementation "com.graphql-java:graphql-java:${graphqlJavaVersion}"
     implementation "com.graphql-java:graphql-java-extended-scalars:${graphqlJavaExtendedScalarVersion}"
-    implementation "commons-logging:commons-logging:${commonsLoggingVersion}"
+    implementation "commons-logging:commons-logging:${commonsLoggingVersion}" //TODO: check this
     testImplementation "org.testng:testng:${testngVersion}"
-    dist "com.graphql-java:graphql-java:${graphqlJavaVersion}"
-    dist "com.graphql-java:graphql-java-extended-scalars:${graphqlJavaExtendedScalarVersion}"
-
-    balTools ("org.ballerinalang:jballerina-tools:${ballerinaLangVersion}") {
-        transitive = false
-    }
 }
 
 def excludePattern = '**/module-info.java'
@@ -66,7 +58,7 @@ tasks.withType(Checkstyle) {
 checkstyle {
     toolVersion "${project.checkstylePluginVersion}"
     configFile rootProject.file("build-config/checkstyle/build/checkstyle.xml")
-    configProperties = ["suppressionFile" : file("${rootDir}/build-config/checkstyle/build/suppressions.xml")]
+    configProperties = ["suppressionFile": file("${rootDir}/build-config/checkstyle/build/suppressions.xml")]
 }
 
 checkstyleMain.dependsOn(":checkstyle:downloadCheckstyleRuleFiles")
@@ -80,38 +72,13 @@ spotbugsMain {
         text.enabled = true
     }
     def excludeFile = file("${rootDir}/spotbugs-exclude.xml")
-    if(excludeFile.exists()) {
+    if (excludeFile.exists()) {
         excludeFilter = excludeFile
     }
 }
 
 spotbugsTest {
     enabled = false
-}
-
-def bDistribution = file("$project.buildDir/extracted-distribution/jballerina-tools-${ballerinaLangVersion}")
-task jBallerinaPack {
-    doLast {
-        configurations.balTools.resolvedConfiguration.resolvedArtifacts.each { artifact ->
-            copy {
-                from project.zipTree(artifact.getFile())
-                into new File(project.buildDir, "extracted-distribution/")
-            }
-        }
-    }
-    outputs.dir bDistribution
-}
-
-task unpackStdLibs() {
-    dependsOn(jBallerinaPack)
-    doLast {
-        configurations.ballerinaStdLibs.resolvedConfiguration.resolvedArtifacts.each { artifact ->
-            copy {
-                from project.zipTree(artifact.getFile())
-                into new File("${project.buildDir}/extracted-distribution/" + artifact.name + "-zip")
-            }
-        }
-    }
 }
 
 jacoco {
@@ -135,20 +102,87 @@ compileJava {
     }
 }
 
+task downloadBallerinaDist(type: Download) {
+    dependsOn {
+        checkBallerinaVersion
+    }
+
+    onlyIf {
+        checkBallerinaVersion.shouldDownload
+    }
+
+    doFirst {
+        println "Ballerina distribution version ${ballerinaLangVersion} not found. Downloading..."
+    }
+
+    src "https://dist.ballerina.io/downloads/${ballerinaLangVersion}/ballerina-${ballerinaLangVersion}-swan-lake.zip"
+    overwrite false
+    onlyIfNewer true
+    dest project.buildDir
+
+    doLast {
+        println "Ballerina distribution downloaded successfully."
+    }
+}
+
+task extractBallerinaDist(type: Copy) {
+    dependsOn downloadBallerinaDist
+    onlyIf {
+        checkBallerinaVersion.shouldDownload
+    }
+    doFirst {
+        println "Extracting Ballerina distribution..."
+    }
+
+    def fileName = "ballerina-${ballerinaLangVersion}-swan-lake"
+    from zipTree("${project.buildDir}/${fileName}.zip")
+    into project.buildDir
+    doLast {
+        println "Ballerina distribution extracted successfully."
+        System.setProperty("BALLERINA_HOME", "${project.buildDir}/${fileName}")
+    }
+}
+
+task checkBallerinaVersion(type: Exec) {
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd', '/c', 'bal', '--version'
+    } else {
+        commandLine 'bash', 'bal', '--version'
+    }
+
+    standardOutput = new ByteArrayOutputStream()
+    ignoreExitValue = true
+
+    doLast {
+        String output = standardOutput.toString().trim()
+        println "Ballerina distribution check result: $output"
+        standardOutput = System.out
+        if (executionResult.get().exitValue != 0 || !output.contains(ballerinaLangVersion)) {
+            checkBallerinaVersion.ext.shouldDownload = true
+        } else {
+            checkBallerinaVersion.ext.shouldDownload = false
+        }
+    }
+}
 
 test {
-    systemProperties = [ "target.dir": "$project.buildDir",
-                         "distributions.dir": bDistribution,
-                         "ballerina.home": bDistribution,
-                         "ballerina.version": "jballerina-tools-${ballerinaLangVersion}"
-    ]
+    dependsOn {
+        extractBallerinaDist
+    }
+    doFirst {
+        println "Ballerina distribution path: ${System.getProperty("BALLERINA_HOME")}/distributions/ballerina-${ballerinaLangVersion}"
+        systemProperties = [
+                "target.dir"    : project.buildDir,
+                "ballerina.home": "${System.getProperty("BALLERINA_HOME")}/distributions/ballerina-${ballerinaLangVersion}"
+        ]
+    }
 
     testLogging {
         showStackTraces = true
         showStandardStreams = true
     }
 
-    useTestNG() {
+    useTestNG {
         suites "src/test/resources/testng.xml"
     }
     finalizedBy jacocoTestReport
@@ -160,5 +194,4 @@ clean {
 }
 
 jacocoTestReport.dependsOn test
-
-build.dependsOn(jacocoTestReport)
+build.dependsOn jacocoTestReport

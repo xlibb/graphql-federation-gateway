@@ -80,8 +80,12 @@ public class SchemaTypes {
                     ((GraphQLObjectType) graphQLSchema.getType(objectTypeName));
             if (objectType != null) {
                 for (GraphQLFieldDefinition field : objectType.getFields()) {
+                    FieldDefinition fieldDefinition = field.getDefinition();
+                    if (fieldDefinition == null) {
+                        continue;
+                    }
                     objectTypeFieldsMap.put(Utils.escapeIdentifier(field.getName()),
-                            SpecReader.getFieldType(graphQLSchema, field.getDefinition().getType()));
+                            SpecReader.getFieldType(graphQLSchema, fieldDefinition.getType()));
                 }
             }
         }

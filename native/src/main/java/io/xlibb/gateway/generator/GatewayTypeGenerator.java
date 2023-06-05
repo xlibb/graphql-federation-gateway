@@ -32,11 +32,13 @@ import io.ballerina.compiler.syntax.tree.TypeDefinitionNode;
 import io.ballerina.tools.text.TextDocument;
 import io.ballerina.tools.text.TextDocuments;
 import io.xlibb.gateway.exception.GatewayGenerationException;
+import io.xlibb.gateway.exception.ValidationException;
 import io.xlibb.gateway.generator.common.CommonUtils;
 import io.xlibb.gateway.graphql.SpecReader;
 import io.xlibb.gateway.graphql.components.FieldType;
 import io.xlibb.gateway.graphql.components.SchemaTypes;
 import org.ballerinalang.formatter.core.Formatter;
+import org.ballerinalang.formatter.core.FormatterException;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -77,12 +79,12 @@ public class GatewayTypeGenerator {
         try {
             SyntaxTree syntaxTree = generateSyntaxTree();
             return Formatter.format(syntaxTree).toString();
-        } catch (Exception e) {
+        } catch (ValidationException | FormatterException e) {
             throw new GatewayGenerationException("Error while generating the gateway types");
         }
     }
 
-    private SyntaxTree generateSyntaxTree() throws GatewayGenerationException {
+    private SyntaxTree generateSyntaxTree() throws GatewayGenerationException, ValidationException {
         List<TypeDefinitionNode> typeDefinitionNodeList = new LinkedList<>();
         NodeList<ImportDeclarationNode> importsList = createEmptyNodeList();
 
@@ -138,7 +140,7 @@ public class GatewayTypeGenerator {
         }
     }
 
-    private void addInputTypes(List<TypeDefinitionNode> typeDefinitionNodeList) {
+    private void addInputTypes(List<TypeDefinitionNode> typeDefinitionNodeList) throws ValidationException {
         List<String> names = SpecReader.getInputObjectTypeNames(graphQLSchema);
         for (String name : names) {
             List<Node> fieldNodes = new ArrayList<>();

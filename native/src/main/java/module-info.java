@@ -17,13 +17,11 @@
 module io.xlibb.gateway {
     requires io.ballerina.lang;
     requires io.ballerina.parser;
-    requires io.ballerina.cli;
     requires com.graphqljava;
     requires com.graphqljava.extendedscalars;
     requires java.net.http;
     requires io.ballerina.tools.api;
     requires org.apache.commons.io;
-    requires io.ballerina.stdlib.graphql.commons;
     requires io.ballerina.formatter.core;
     requires org.slf4j;
     requires commons.logging;

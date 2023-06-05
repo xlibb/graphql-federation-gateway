@@ -36,12 +36,14 @@ import io.ballerina.compiler.syntax.tree.SyntaxTree;
 import io.ballerina.tools.text.TextDocument;
 import io.ballerina.tools.text.TextDocuments;
 import io.xlibb.gateway.exception.GatewayGenerationException;
+import io.xlibb.gateway.exception.ValidationException;
 import io.xlibb.gateway.generator.common.CommonUtils;
 import io.xlibb.gateway.graphql.SpecReader;
 import io.xlibb.gateway.graphql.components.FieldData;
 import io.xlibb.gateway.graphql.components.JoinGraph;
 import io.xlibb.gateway.graphql.components.SchemaTypes;
 import org.ballerinalang.formatter.core.Formatter;
+import org.ballerinalang.formatter.core.FormatterException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,7 +109,8 @@ public class GatewayQueryPlanGenerator {
     private final Map<String, JoinGraph> joinGraphs;
     private final SchemaTypes schemaTypes;
 
-    public GatewayQueryPlanGenerator(GraphQLSchema graphQLSchema) throws GatewayGenerationException {
+    public GatewayQueryPlanGenerator(GraphQLSchema graphQLSchema) throws GatewayGenerationException,
+                                                                         ValidationException {
         this.graphQLSchema = graphQLSchema;
         this.joinGraphs = getJoinGraphs(graphQLSchema);
         this.schemaTypes = new SchemaTypes(graphQLSchema);
@@ -117,12 +120,12 @@ public class GatewayQueryPlanGenerator {
         try {
             SyntaxTree syntaxTree = generateSyntaxTree();
             return Formatter.format(syntaxTree).toString();
-        } catch (Exception e) {
+        } catch (ValidationException | FormatterException e) {
             throw new GatewayGenerationException("Error while generating the gateway types");
         }
     }
 
-    private SyntaxTree generateSyntaxTree() {
+    private SyntaxTree generateSyntaxTree() throws ValidationException {
         List<ModuleMemberDeclarationNode> nodeList = new LinkedList<>();
         NodeList<ImportDeclarationNode> importsList = createEmptyNodeList();
 
@@ -303,7 +306,7 @@ public class GatewayQueryPlanGenerator {
                     String graph = getGraphOfJoinTypeArgument(directive);
                     String key = getKeyOfJoinTypeArgument(name, directive);
                     keys.put(graph, key);
-                } catch (GatewayGenerationException ignored) {
+                } catch (GatewayGenerationException | ValidationException ignored) {
 
                 }
             }
@@ -313,11 +316,15 @@ public class GatewayQueryPlanGenerator {
     }
 
     private String getGraphOfJoinTypeArgument(GraphQLAppliedDirective directive)
-            throws GatewayGenerationException {
+            throws GatewayGenerationException, ValidationException {
         for (GraphQLAppliedDirectiveArgument argument : directive.getArguments()) {
             if (argument.getName().equals("graph")) {
+                Object value = argument.getArgumentValue().getValue();
+                if (value == null) {
+                    throw new ValidationException("graph argument value is null");
+                }
                 String graphEnumName =
-                        ((EnumValue) Objects.requireNonNull(argument.getArgumentValue().getValue())).getName();
+                        ((EnumValue) value).getName();
                 return this.joinGraphs.get(graphEnumName).getName();
             }
         }
@@ -430,7 +437,7 @@ public class GatewayQueryPlanGenerator {
         return createSeparatedNodeList(fieldNodeList);
     }
 
-    private void addClientConstantDeclarations(List<ModuleMemberDeclarationNode> nodeList) {
+    private void addClientConstantDeclarations(List<ModuleMemberDeclarationNode> nodeList) throws ValidationException {
         for (Map.Entry<String, JoinGraph> entry :
                 getJoinGraphs(this.graphQLSchema).entrySet()) {
             nodeList.add(NodeParser.parseModuleMemberDeclaration(

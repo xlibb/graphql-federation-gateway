@@ -19,6 +19,7 @@
 package io.xlibb.gateway.generator;
 
 import graphql.language.EnumValue;
+import graphql.language.InputValueDefinition;
 import graphql.schema.GraphQLAppliedDirective;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
@@ -33,18 +34,19 @@ import io.ballerina.tools.text.TextDocument;
 import io.ballerina.tools.text.TextDocuments;
 import io.xlibb.gateway.GatewayProject;
 import io.xlibb.gateway.exception.GatewayGenerationException;
+import io.xlibb.gateway.exception.ValidationException;
 import io.xlibb.gateway.generator.common.CommonUtils;
 import io.xlibb.gateway.graphql.SpecReader;
 import io.xlibb.gateway.graphql.components.FieldType;
 import io.xlibb.gateway.graphql.components.JoinGraph;
 import org.ballerinalang.formatter.core.Formatter;
+import org.ballerinalang.formatter.core.FormatterException;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static io.ballerina.compiler.syntax.tree.AbstractNodeFactory.createNodeList;
 import static io.ballerina.compiler.syntax.tree.AbstractNodeFactory.createToken;
@@ -84,7 +86,7 @@ public class GatewayServiceGenerator {
     private final GatewayProject project;
     private final Map<String, JoinGraph> joinGraphs;
 
-    public GatewayServiceGenerator(GatewayProject project) throws IOException {
+    public GatewayServiceGenerator(GatewayProject project) throws ValidationException {
         this.project = project;
         joinGraphs = getJoinGraphs(project.getSchema());
     }
@@ -93,7 +95,7 @@ public class GatewayServiceGenerator {
         try {
             SyntaxTree syntaxTree = generateSyntaxTree();
             return Formatter.format(syntaxTree).toString();
-        } catch (Exception e) {
+        } catch (IOException | FormatterException e) {
             throw new GatewayGenerationException("Error while generating the gateway services");
         }
     }
@@ -210,18 +212,18 @@ public class GatewayServiceGenerator {
     private String getClientNameFromFieldDefinition(GraphQLFieldDefinition graphQLFieldDefinition, String parentType)
             throws GatewayGenerationException {
         for (GraphQLAppliedDirective directive : graphQLFieldDefinition.getAppliedDirectives()) {
-            if (directive.getName().equals("join__field")) {
-                return ((EnumValue) Objects.requireNonNull(
-                        directive.getArgument("graph").getArgumentValue().getValue())).getName();
+            Object value = directive.getArgument("graph").getArgumentValue().getValue();
+            if (directive.getName().equals("join__field") && value instanceof EnumValue) {
+                return ((EnumValue) value).getName();
             }
         }
 
         List<GraphQLAppliedDirective> appliedDirectivesOnParent =
                 SpecReader.getObjectTypeDirectives(project.getSchema(), parentType);
         for (GraphQLAppliedDirective directive : appliedDirectivesOnParent) {
-            if (directive.getName().equals("join__type")) {
-                return ((EnumValue) Objects.requireNonNull(
-                        directive.getArgument("graph").getArgumentValue().getValue())).getName();
+            Object value = directive.getArgument("graph").getArgumentValue().getValue();
+            if (directive.getName().equals("join__type") && value instanceof EnumValue) {
+                return ((EnumValue) value).getName();
             }
         }
 
@@ -232,15 +234,18 @@ public class GatewayServiceGenerator {
         StringBuilder arguments = new StringBuilder();
         for (GraphQLArgument argument : ((GraphQLFieldDefinition) graphQLObjectType).getArguments()) {
             arguments.append(", ");
-            FieldType fieldType = SpecReader.getFieldType(project.getSchema(),
-                    Objects.requireNonNull(argument.getDefinition()).getType());
-            if (argument.getDefinition().getDefaultValue() != null) {
-                arguments.append(fieldType.getName()).append(fieldType.getTokens()).append(" ")
-                        .append(argument.getName()).append(" = ")
-                        .append(CommonUtils.getValue(argument.getDefinition().getDefaultValue()));
-            } else {
-                arguments.append(fieldType.getName()).append(fieldType.getTokens()).append(" ")
-                        .append(argument.getName());
+            InputValueDefinition inputValueDefinition = argument.getDefinition();
+            if (inputValueDefinition != null) {
+                FieldType fieldType = SpecReader.getFieldType(project.getSchema(),
+                        inputValueDefinition.getType());
+                if (inputValueDefinition.getDefaultValue() != null) {
+                    arguments.append(fieldType.getName()).append(fieldType.getTokens()).append(" ")
+                            .append(argument.getName()).append(" = ")
+                            .append(CommonUtils.getValue(inputValueDefinition.getDefaultValue()));
+                } else {
+                    arguments.append(fieldType.getName()).append(fieldType.getTokens()).append(" ")
+                            .append(argument.getName());
+                }
             }
         }
         return arguments.toString();

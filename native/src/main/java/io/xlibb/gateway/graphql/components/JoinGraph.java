@@ -19,10 +19,10 @@
 package io.xlibb.gateway.graphql.components;
 
 import graphql.language.Directive;
+import graphql.language.EnumValueDefinition;
 import graphql.language.StringValue;
 import graphql.schema.GraphQLEnumValueDefinition;
-
-import java.util.Objects;
+import io.xlibb.gateway.exception.ValidationException;
 
 /**
  * Class to hold the information about join__Graph Enum.
@@ -31,8 +31,12 @@ public class JoinGraph {
     private final String name;
     private final String url;
 
-    public JoinGraph(GraphQLEnumValueDefinition element) {
-        var node = Objects.requireNonNull(element.getDefinition()).getChildren().get(0);
+    public JoinGraph(GraphQLEnumValueDefinition element) throws ValidationException {
+        EnumValueDefinition definition = element.getDefinition();
+        if (definition == null) {
+            throw new ValidationException("Enum value definition cannot be null");
+        }
+        var node = definition.getChildren().get(0);
         this.name = ((StringValue) ((Directive) node).getArgument("name").getValue()).getValue();
         this.url = ((StringValue) ((Directive) node).getArgument("url").getValue()).getValue();
     }

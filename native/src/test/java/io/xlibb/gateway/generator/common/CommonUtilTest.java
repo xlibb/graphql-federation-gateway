@@ -145,8 +145,7 @@ public class CommonUtilTest extends GraphqlTest {
             CommonUtils.getCompiledBallerinaProject(projectDir, tmpDir, folderName);
         } catch (GatewayGenerationException e) {
             Assert.assertEquals(e.getMessage(),
-                    "ERROR [(null:):(1:1,1:1)] Ballerina federation gateway generation related error" +
-                    " occurred. Error while generating the executable.");
+                    "Error while generating the executable.");
         }
     }
 
