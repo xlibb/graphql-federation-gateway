@@ -19,4 +19,5 @@ public type QueryPlanEntry record {|
 
 type EntityResponse record {
     record {|json[] _entities;|} data;
+    graphql:ErrorDetail[] errors;
 };

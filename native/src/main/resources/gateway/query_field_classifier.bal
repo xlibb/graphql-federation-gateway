@@ -2,7 +2,7 @@ import ballerina/graphql;
 
 public class QueryFieldClassifier {
 
-    // client for which the field peroperties are classified.
+    // client for which the field properties are classified.
     private string clientName;
 
     // field properties

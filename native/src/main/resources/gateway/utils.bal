@@ -132,3 +132,33 @@ isolated function getParamAsString(anydata param) returns string {
         return param.toString();
     }
 }
+
+isolated function addErrorsToGraphqlContext(graphql:Context context, graphql:ErrorDetail|graphql:ErrorDetail[] errors) {
+    if errors is graphql:ErrorDetail {
+        context.addError(errors);
+    } else {
+        foreach graphql:ErrorDetail e in errors {
+            context.addError(e);
+        }
+    }
+}
+
+isolated function appendUnableToResolveErrorDetail(graphql:ErrorDetail[] errors,
+        graphql:Field 'field) {
+    errors.push({
+        message: "Unable to resolve " + 'field.getName(),
+        path: 'field.getPath()
+    });
+}
+
+isolated function appendErrorDetailsFromResponse(graphql:ErrorDetail[] errors, graphql:ErrorDetail[]? responseErrors) {
+    if responseErrors is () {
+        return;
+    }
+    foreach graphql:ErrorDetail e in responseErrors {
+        errors.push({
+            message: e.message,
+            path: e.path
+        });
+    }
+}
