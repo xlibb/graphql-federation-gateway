@@ -117,7 +117,7 @@ task downloadBallerinaDist(type: Download) {
     src "https://dist.ballerina.io/downloads/${ballerinaLangVersion}/ballerina-${ballerinaLangVersion}-swan-lake.zip"
     overwrite false
     onlyIfNewer true
-    dest project.buildDir
+    dest "${projectDir}/ballerina-dist"
 
     doLast {
         println "Ballerina distribution downloaded successfully."
@@ -134,7 +134,7 @@ task extractBallerinaDist(type: Copy) {
     }
 
     def fileName = "ballerina-${ballerinaLangVersion}-swan-lake"
-    from zipTree("${project.buildDir}/${fileName}.zip")
+    from zipTree("${projectDir}/ballerina-dist/${fileName}.zip")
     into project.buildDir
     doLast {
         println "Ballerina distribution extracted successfully."
