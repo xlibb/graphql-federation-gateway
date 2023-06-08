@@ -318,7 +318,7 @@ public class CommonUtils {
         }
     }
 
-    private static String getBallerinaTypeName(String type) {
+    static String getBallerinaTypeName(String type) {
         switch (type) {
             case "Int":
                 return "int";
