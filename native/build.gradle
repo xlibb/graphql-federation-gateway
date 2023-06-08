@@ -40,6 +40,7 @@ dependencies {
     checkstyle "com.puppycrawl.tools:checkstyle:${checkstylePluginVersion}"
 
     implementation "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
+    implementation "org.ballerinalang:ballerina-runtime:${ballerinaLangVersion}"
     implementation "org.ballerinalang:ballerina-tools-api:${ballerinaLangVersion}"
     implementation "org.ballerinalang:ballerina-parser:${ballerinaLangVersion}"
     implementation "org.ballerinalang:formatter-core:${ballerinaLangVersion}"
@@ -117,7 +118,7 @@ task downloadBallerinaDist(type: Download) {
     src "https://dist.ballerina.io/downloads/${ballerinaLangVersion}/ballerina-${ballerinaLangVersion}-swan-lake.zip"
     overwrite false
     onlyIfNewer true
-    dest "${projectDir}/ballerina-dist"
+    dest "${project.rootDir}/ballerina-dist"
 
     doLast {
         println "Ballerina distribution downloaded successfully."
@@ -131,7 +132,7 @@ task getBalHomePath {
     doLast {
         if (checkBallerinaVersion.shouldDownload){
             getBalHomePath.ext.balHomePath =
-                    "${project.buildDir}/ballerina-${ballerinaLangVersion}-swan-lake/distributions/ballerina-${ballerinaLangVersion}"
+                    "${project.rootDir}/build/ballerina-${ballerinaLangVersion}-swan-lake/distributions/ballerina-${ballerinaLangVersion}"
         } else {
             getBalHomePath.ext.balHomePath =
                     "${System.getenv("BALLERINA_HOME")}/distributions/ballerina-${ballerinaLangVersion}"
@@ -149,8 +150,8 @@ task extractBallerinaDist(type: Copy) {
     }
 
     def fileName = "ballerina-${ballerinaLangVersion}-swan-lake"
-    from zipTree("${projectDir}/ballerina-dist/${fileName}.zip")
-    into project.buildDir
+    from zipTree("${project.rootDir}/ballerina-dist/${fileName}.zip")
+    into "${project.rootDir}/build"
     doLast {
         println "Ballerina distribution extracted successfully."
     }

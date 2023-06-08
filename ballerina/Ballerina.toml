@@ -1,6 +1,6 @@
 [package]
 org = "xlibb"
-name = "fedration_gateway"
+name = "graphql_federation_gateway"
 version = "0.1.0"
 
 [build-options]

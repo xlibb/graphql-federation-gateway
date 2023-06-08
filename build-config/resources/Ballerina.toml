@@ -1,0 +1,16 @@
+[package]
+org = "xlibb"
+name = "graphql_federation_gateway"
+version = "@toml.version@"
+authors = ["Ballerina"]
+export=["graphql_federation_gateway"]
+keywords = ["graphql", "federation", "gateway"]
+repository = "https://github.com/xlibb/graphql-federation-gateway"
+license = ["Apache-2.0"]
+distribution = "2201.6.0"
+
+[[platform.java11.dependency]]
+groupId = "io.xlibb.gateway"
+artifactId = "gateway-native"
+version = "@toml.version@"
+path = "../native/build/libs/gateway-native-@project.version@.jar"

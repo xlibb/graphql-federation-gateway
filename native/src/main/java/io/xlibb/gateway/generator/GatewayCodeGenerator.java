@@ -1,6 +1,8 @@
 package io.xlibb.gateway.generator;
 
 import graphql.schema.GraphQLSchema;
+import io.ballerina.runtime.api.utils.StringUtils;
+import io.ballerina.runtime.api.values.BString;
 import io.xlibb.gateway.GatewayProject;
 import io.xlibb.gateway.exception.GatewayGenerationException;
 import io.xlibb.gateway.exception.ValidationException;
@@ -31,6 +33,16 @@ public class GatewayCodeGenerator {
             "records.bal",
             "query_field_classifier.bal"
     };
+
+    public static BString generateGateway(BString supergraphPath, BString outPath) {
+        try {
+            GatewayProject project = new GatewayProject("gateway", supergraphPath.getValue(), outPath.getValue());
+            File file = generateGatewayJar(project);
+            return StringUtils.fromString(file.getAbsolutePath());
+        } catch (GatewayGenerationException | IOException | ValidationException e) {
+            return StringUtils.fromString(e.getMessage());
+        }
+    }
 
     public static File generateGatewayJar(GatewayProject project) throws GatewayGenerationException {
         try {

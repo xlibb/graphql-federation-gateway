@@ -24,7 +24,6 @@ pluginManagement {
         id "net.researchgate.release" version "${releasePluginVersion}"
         id "io.ballerina.plugin" version "${ballerinaGradlePluginVersion}"
     }
-
     repositories {
         gradlePluginPortal()
         maven {
@@ -45,9 +44,11 @@ rootProject.name = 'gateway'
 
 include ':checkstyle'
 include ':gateway-native'
+include ':gateway-ballerina'
 
 project(':checkstyle').projectDir = file("build-config${File.separator}checkstyle")
 project(':gateway-native').projectDir = file("native")
+project(':gateway-ballerina').projectDir = file("ballerina")
 
 gradleEnterprise {
     buildScan {
