@@ -29,16 +29,16 @@ public class Constants {
     // Constants for the gateway query plan generation.
     public static final String CLIENT_NAME_DECLARATION = "public const string " + CLIENT_NAME_PLACEHOLDER
             + " = \"" + CLIENT_NAME_VALUE_PLACEHOLDER + "\";";
-
-    public static final String ISOLATED_SERVICE_TEMPLATE = "isolated service on new graphql:Listener(PORT) {" +
-            RESOURCE_FUNCTIONS_PLACEHOLDER +
-            "}";
     public static final String MATCH_CLIENT_STATEMENT_TEMPLATE =
             "\"" + CLIENT_NAME_VALUE_PLACEHOLDER + "\" => {return " + CLIENT_NAME_PLACEHOLDER + "_CLIENT;}";
 
     // File names for templates
     public static final String RESOURCE_FUNCTION_TEMPLATE_FILE = "resource_function.bal.partial";
+    public static final String SCALAR_RETURN_TYPE_RESOURCE_FUNCTION_TEMPLATE_FILE =
+            "scalar_return_type_resource_function.bal.partial";
     public static final String REMOTE_FUNCTION_TEMPLATE_FILE = "remote_function.bal.partial";
+    public static final String SCALAR_RETURN_TYPE_REMOTE_FUNCTION_TEMPLATE_FILE =
+            "scalar_return_type_remote_function.bal.partial";
     public static final String GET_CLIENT_FUNCTION_TEMPLATE_FILE = "get_client_function.bal.partial";
     public static final String SERVICE_DECLARATION_TEMPLATE_FILE = "service_declaration.bal.partial";
     public static final String GATEWAY_PROJECT_TEMPLATE_DIRECTORY = "gateway";

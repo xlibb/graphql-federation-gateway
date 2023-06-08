@@ -25,13 +25,13 @@ isolated service on new graphql:Listener(PORT) {
         log:printInfo(string `💃 Server ready at port: ${PORT}`);
     }
 
-    isolated resource function get astronaut(graphql:Field 'field, string id) returns Astronaut|error {
+    isolated resource function get astronaut(graphql:Field 'field, string id) returns Astronaut?|error {
         QueryFieldClassifier classifier = new ('field, queryPlan, ASTRONAUTS);
         string fieldString = classifier.getFieldString();
         UnresolvableField[] propertiesNotResolved = classifier.getUnresolvableFields();
         string queryString = wrapwithQuery("astronaut", fieldString, {"id": getParamAsString(id)});
         astronautResponse response = check ASTRONAUTS_CLIENT->execute(queryString);
-        Astronaut result = response.data.astronaut;
+        Astronaut? result = response.data.astronaut;
         Resolver resolver = new (queryPlan, result.toJson(), "Astronaut", propertiesNotResolved, ["astronaut"]);
         json|error finalResult = resolver.getResult();
         if finalResult is error {
@@ -40,13 +40,13 @@ isolated service on new graphql:Listener(PORT) {
             return finalResult.cloneWithType();
         }
     }
-    isolated resource function get astronauts(graphql:Field 'field) returns Astronaut[]|error {
+    isolated resource function get astronauts(graphql:Field 'field) returns Astronaut?[]?|error {
         QueryFieldClassifier classifier = new ('field, queryPlan, ASTRONAUTS);
         string fieldString = classifier.getFieldString();
         UnresolvableField[] propertiesNotResolved = classifier.getUnresolvableFields();
         string queryString = wrapwithQuery("astronauts", fieldString);
         astronautsResponse response = check ASTRONAUTS_CLIENT->execute(queryString);
-        Astronaut[] result = response.data.astronauts;
+        Astronaut?[]? result = response.data.astronauts;
         Resolver resolver = new (queryPlan, result.toJson(), "Astronaut", propertiesNotResolved, ["astronauts"]);
         json|error finalResult = resolver.getResult();
         if finalResult is error {
@@ -55,13 +55,13 @@ isolated service on new graphql:Listener(PORT) {
             return finalResult.cloneWithType();
         }
     }
-    isolated resource function get mission(graphql:Field 'field, string id) returns Mission|error {
+    isolated resource function get mission(graphql:Field 'field, string id) returns Mission?|error {
         QueryFieldClassifier classifier = new ('field, queryPlan, MISSIONS);
         string fieldString = classifier.getFieldString();
         UnresolvableField[] propertiesNotResolved = classifier.getUnresolvableFields();
         string queryString = wrapwithQuery("mission", fieldString, {"id": getParamAsString(id)});
         missionResponse response = check MISSIONS_CLIENT->execute(queryString);
-        Mission result = response.data.mission;
+        Mission? result = response.data.mission;
         Resolver resolver = new (queryPlan, result.toJson(), "Mission", propertiesNotResolved, ["mission"]);
         json|error finalResult = resolver.getResult();
         if finalResult is error {
@@ -70,13 +70,13 @@ isolated service on new graphql:Listener(PORT) {
             return finalResult.cloneWithType();
         }
     }
-    isolated resource function get missions(graphql:Field 'field) returns Mission[]|error {
+    isolated resource function get missions(graphql:Field 'field) returns Mission?[]?|error {
         QueryFieldClassifier classifier = new ('field, queryPlan, MISSIONS);
         string fieldString = classifier.getFieldString();
         UnresolvableField[] propertiesNotResolved = classifier.getUnresolvableFields();
         string queryString = wrapwithQuery("missions", fieldString);
         missionsResponse response = check MISSIONS_CLIENT->execute(queryString);
-        Mission[] result = response.data.missions;
+        Mission?[]? result = response.data.missions;
         Resolver resolver = new (queryPlan, result.toJson(), "Mission", propertiesNotResolved, ["missions"]);
         json|error finalResult = resolver.getResult();
         if finalResult is error {

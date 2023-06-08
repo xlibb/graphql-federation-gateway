@@ -39,6 +39,7 @@ import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLObjectType;
+import graphql.schema.GraphQLScalarType;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.GraphQLSchemaElement;
 import graphql.schema.GraphQLType;
@@ -112,19 +113,33 @@ public class CommonUtils {
     /**
      * Return the type name of the GraphQL type.
      *
-     * @param queryType GraphQL type
+     * @param graphQLType GraphQL type
      * @return Type name
      * @throws GatewayGenerationException if the type is not supported
      */
-    public static String getTypeNameFromGraphQLType(GraphQLType queryType) throws GatewayGenerationException {
-        if (queryType instanceof GraphQLObjectType) {
-            return ((GraphQLObjectType) queryType).getName();
-        } else if (queryType instanceof GraphQLList) {
-            return getTypeNameFromGraphQLType(((GraphQLList) queryType).getOriginalWrappedType()) + "[]";
-        } else if (queryType instanceof GraphQLNonNull) {
-            return getTypeNameFromGraphQLType(((GraphQLNonNull) queryType).getOriginalWrappedType());
+    public static String getTypeNameFromGraphQLType(GraphQLType graphQLType) throws GatewayGenerationException {
+        if (graphQLType instanceof GraphQLObjectType) {
+            return ((GraphQLObjectType) graphQLType).getName() + "?";
+        } else if (graphQLType instanceof GraphQLList) {
+            return getTypeNameFromGraphQLType(((GraphQLList) graphQLType).getOriginalWrappedType()) + "[]?";
+        } else if (graphQLType instanceof GraphQLNonNull) {
+            return getNonNullTypeName(((GraphQLNonNull) graphQLType).getOriginalWrappedType());
+        } else if (graphQLType instanceof GraphQLScalarType) {
+            return getBallerinaTypeName(((GraphQLScalarType) graphQLType).getName()) + "?";
         } else {
-            throw new GatewayGenerationException("Unsupported type: " + queryType);
+            throw new GatewayGenerationException("Unsupported type: " + graphQLType);
+        }
+    }
+
+    private static String getNonNullTypeName(GraphQLType graphQLType) throws GatewayGenerationException {
+        if (graphQLType instanceof GraphQLObjectType) {
+            return ((GraphQLObjectType) graphQLType).getName();
+        } else if (graphQLType instanceof GraphQLList) {
+            return getTypeNameFromGraphQLType(((GraphQLList) graphQLType).getOriginalWrappedType()) + "[]";
+        } else if (graphQLType instanceof GraphQLScalarType) {
+            return getBallerinaTypeName(((GraphQLScalarType) graphQLType).getName());
+        } else {
+            throw new GatewayGenerationException("Unsupported type: " + graphQLType);
         }
     }
 
@@ -138,7 +153,7 @@ public class CommonUtils {
         return getTypeNameFromType(definition.getType());
     }
 
-    private static String getTypeNameFromType(Type type) throws GatewayGenerationException {
+    private static String getTypeNameFromType(Type<?> type) throws GatewayGenerationException {
         if (type instanceof NonNullType) {
             return getTypeNameFromType(((NonNullType) type).getType());
         } else if (type instanceof ListType) {
@@ -190,7 +205,9 @@ public class CommonUtils {
      * @throws GatewayGenerationException if the type is not supported
      */
     public static String getBasicTypeNameFromGraphQLType(GraphQLType queryType) throws GatewayGenerationException {
-        if (queryType instanceof GraphQLObjectType) {
+        if (queryType instanceof GraphQLScalarType) {
+            return getBallerinaTypeName(((GraphQLScalarType) queryType).getName());
+        } else if (queryType instanceof GraphQLObjectType) {
             return ((GraphQLObjectType) queryType).getName();
         } else if (queryType instanceof GraphQLList) {
             return getBasicTypeNameFromGraphQLType(((GraphQLList) queryType).getOriginalWrappedType());
@@ -199,6 +216,23 @@ public class CommonUtils {
         } else {
             throw new GatewayGenerationException("Unsupported type: " + queryType);
         }
+    }
+
+    /**
+     * Return whether the GraphQL type is a scalar type.
+     *
+     * @param queryType GraphQL type
+     * @return Whether the GraphQL type is a scalar type
+     */
+    public static Boolean isScalarType(GraphQLType queryType) {
+        if (queryType instanceof GraphQLScalarType) {
+            return true;
+        } else if (queryType instanceof GraphQLNonNull) {
+            return isScalarType(((GraphQLNonNull) queryType).getOriginalWrappedType());
+        } else if (queryType instanceof GraphQLList) {
+            return isScalarType(((GraphQLList) queryType).getOriginalWrappedType());
+        }
+        return false;
     }
 
     /**
@@ -270,7 +304,7 @@ public class CommonUtils {
         }
     }
 
-    public static String getValue(Value value) throws GatewayGenerationException {
+    public static String getValue(Value<?> value) throws GatewayGenerationException {
         if (value instanceof IntValue) {
             return ((IntValue) value).getValue().toString();
         } else if (value instanceof StringValue) {
@@ -281,6 +315,21 @@ public class CommonUtils {
             return ((FloatValue) value).getValue().toString();
         } else {
             throw new GatewayGenerationException("Unsupported value: " + value);
+        }
+    }
+
+    private static String getBallerinaTypeName(String type) {
+        switch (type) {
+            case "Int":
+                return "int";
+            case "String":
+                return "string";
+            case "Boolean":
+                return "boolean";
+            case "Float":
+                return "float";
+            default:
+                return "any";
         }
     }
 

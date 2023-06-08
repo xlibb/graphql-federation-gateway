@@ -90,7 +90,8 @@ public class GatewayExecutionTest {
     public Object[] getQueryFileNames() {
         return new Object[] {
                 "query_one_subgraph_service",
-                "query_two_subgraph_services"
+                "query_two_subgraph_services",
+                "query_simple_string",
         };
     }
 

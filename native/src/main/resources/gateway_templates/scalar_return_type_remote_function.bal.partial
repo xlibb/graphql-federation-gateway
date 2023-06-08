@@ -1,0 +1,8 @@
+isolated resource function @{query}(graphql:Field 'field, graphql:Context context @{params}) returns @{responseType}|error {
+    string queryString = wrapwithMutation("@{query}", () @{queryArgs});
+    @{query}Response|graphql:ClientError response = @{clientName}_CLIENT->execute(queryString);
+    if response is graphql:ClientError {
+        return error("Unable to resolve : @{query}");
+    }
+    return response.data.@{query};
+}

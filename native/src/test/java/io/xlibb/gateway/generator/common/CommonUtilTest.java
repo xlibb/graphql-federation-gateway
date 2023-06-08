@@ -67,7 +67,7 @@ public class CommonUtilTest extends GraphqlTest {
     }
 
     @Test(description = "Test get query types", dataProvider = "SchemaAndQueryTypesProvider")
-    public void textGetQueryTypes(GatewayProject project, String[] queryTypes) {
+    public void testGetQueryTypes(GatewayProject project, String[] queryTypes) {
         Object[] queryTypeNames = CommonUtils.getQueryTypes(project.getSchema()).stream().map(
                 field -> ((GraphQLFieldDefinition) field).getName()
         ).toArray();
@@ -78,7 +78,7 @@ public class CommonUtilTest extends GraphqlTest {
     public Object[][] getSchemaAndQueryTypes() throws ValidationException, IOException {
         return new Object[][] {
                 {GatewayTestUtils.getGatewayProject("two_entities", tmpDir), new String[] {
-                        "astronaut", "astronauts", "mission", "missions"
+                        "astronaut", "astronauts", "mission", "missions", "serviceName", "setServiceName", "isExist"
                 }}
         };
     }

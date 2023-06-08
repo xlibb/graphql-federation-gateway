@@ -13,17 +13,17 @@ public type Mission record {|
 |};
 
 public type astronautResponse record {
-    record {|Astronaut astronaut;|} data;
+    record {|Astronaut? astronaut;|} data;
 };
 
 public type astronautsResponse record {
-    record {|Astronaut[] astronauts;|} data;
+    record {|Astronaut?[]? astronauts;|} data;
 };
 
 public type missionResponse record {
-    record {|Mission mission;|} data;
+    record {|Mission? mission;|} data;
 };
 
 public type missionsResponse record {
-    record {|Mission[] missions;|} data;
+    record {|Mission?[]? missions;|} data;
 };

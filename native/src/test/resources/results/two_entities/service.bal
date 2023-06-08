@@ -40,13 +40,13 @@ isolated service on new graphql:Listener(PORT) {
             return finalResult.cloneWithType();
         }
     }
-    isolated resource function get astronaut(graphql:Field 'field, int id) returns Astronaut|error {
+    isolated resource function get astronaut(graphql:Field 'field, int id) returns Astronaut?|error {
         QueryFieldClassifier classifier = new ('field, queryPlan, ASTRONAUTS);
         string fieldString = classifier.getFieldString();
         UnresolvableField[] propertiesNotResolved = classifier.getUnresolvableFields();
         string queryString = wrapwithQuery("astronaut", fieldString, {"id": getParamAsString(id)});
         astronautResponse response = check ASTRONAUTS_CLIENT->execute(queryString);
-        Astronaut result = response.data.astronaut;
+        Astronaut? result = response.data.astronaut;
         Resolver resolver = new (queryPlan, result.toJson(), "Astronaut", propertiesNotResolved, ["astronaut"]);
         json|error finalResult = resolver.getResult();
         if finalResult is error {
@@ -54,6 +54,30 @@ isolated service on new graphql:Listener(PORT) {
         } else {
             return finalResult.cloneWithType();
         }
+    }
+    isolated resource function get serviceName(graphql:Field 'field, graphql:Context context) returns string|error {
+        string queryString = wrapwithQuery("serviceName", ());
+        serviceNameResponse|graphql:ClientError response = ASTRONAUTS_CLIENT->execute(queryString);
+        if response is graphql:ClientError {
+            return error("Unable to resolve : serviceName");
+        }
+        return response.data.serviceName;
+    }
+    isolated resource function get setServiceName(graphql:Field 'field, graphql:Context context, string name) returns string|error {
+        string queryString = wrapwithQuery("setServiceName", (), {"name": getParamAsString(name)});
+        setServiceNameResponse|graphql:ClientError response = ASTRONAUTS_CLIENT->execute(queryString);
+        if response is graphql:ClientError {
+            return error("Unable to resolve : setServiceName");
+        }
+        return response.data.setServiceName;
+    }
+    isolated resource function get isExist(graphql:Field 'field, graphql:Context context, string name) returns boolean|error {
+        string queryString = wrapwithQuery("isExist", (), {"name": getParamAsString(name)});
+        isExistResponse|graphql:ClientError response = ASTRONAUTS_CLIENT->execute(queryString);
+        if response is graphql:ClientError {
+            return error("Unable to resolve : isExist");
+        }
+        return response.data.isExist;
     }
     isolated resource function get missions(graphql:Field 'field) returns Mission[]|error {
         QueryFieldClassifier classifier = new ('field, queryPlan, MISSIONS);
