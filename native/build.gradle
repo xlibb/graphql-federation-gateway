@@ -188,8 +188,8 @@ test {
 }
 
 clean {
-    delete("${projectDir}/src/test/resources/subgraphServices/astronautService/target")
-    delete("${projectDir}/src/test/resources/subgraphServices/missionsService/target")
+    delete("${projectDir}/src/test/resources/sample_subgraph_services/astronaut_service/target")
+    delete("${projectDir}/src/test/resources/sample_subgraph_services/missions_service/target")
 }
 
 jacocoTestReport.dependsOn test

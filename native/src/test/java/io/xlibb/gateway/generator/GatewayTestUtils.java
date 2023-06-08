@@ -42,9 +42,11 @@ import java.util.Comparator;
 public class GatewayTestUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(GatewayTestUtils.class);
     private static final Path sampleRequestResourceDir =
-            Path.of("src", "test", "resources", "sampleRequests").toAbsolutePath();
+            Path.of("src", "test", "resources", "sample_request_responses", "requests").toAbsolutePath();
+    private static final Path sampleResponseResourceDir =
+            Path.of("src", "test", "resources", "sample_request_responses", "responses").toAbsolutePath();
     private static final Path schemaResourceDir =
-            Path.of("src", "test", "resources", "supergraphSchemas").toAbsolutePath();
+            Path.of("src", "test", "resources", "supergraph_schemas").toAbsolutePath();
 
     public static File getBallerinaExecutableJar(Path projectDir, Path tmpDir)
             throws GatewayGenerationException {
@@ -91,7 +93,7 @@ public class GatewayTestUtils {
     }
 
     public static String getResponseContent(String filename) throws IOException {
-        return Files.readString(sampleRequestResourceDir.resolve(filename + ".json"));
+        return Files.readString(sampleResponseResourceDir.resolve(filename + ".json"));
     }
 
     public static String getGraphqlQueryResponse(String graphqlUrl, String query) throws IOException {
