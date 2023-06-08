@@ -36,7 +36,7 @@ import java.nio.file.Paths;
  */
 public class GatewayCodeGenerationTest extends GraphqlTest {
     private final Path expectedResources = this.resourceDir.resolve(Paths.get(
-            "expectedResults"));
+            "results"));
 
     @Test(description = "Test query plan generation for gateway", dataProvider =
             "GatewayQueryPlanGenerationDataProvider")
@@ -45,16 +45,16 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
         GraphQLSchema graphQLSchema =  GatewayTestUtils.getGatewayProject(supergraphFileName, tmpDir).getSchema();
         String generatedSrc = (new GatewayQueryPlanGenerator(graphQLSchema)).generateSrc();
         String expectedSrc = Files.readString(expectedResources.resolve(
-                Paths.get(GatewayTestUtils.getCorrespondingFolderName(supergraphFileName), "queryPlan.bal")));
+                Paths.get(supergraphFileName, "query_plan.bal")));
         Assert.assertEquals(generatedSrc, expectedSrc);
     }
 
     @DataProvider(name = "GatewayQueryPlanGenerationDataProvider")
     public Object[][] getGatewayQueryPlanGenerationTestData() {
         return new Object[][] {
-                {"SupergraphWithTwoEntities"},
-                {"SupergraphWithIDTypeFields"},
-                {"SupergraphWithThreeEntities"}
+                {"two_entities"},
+                {"two_entities_with_id_type_fields"},
+                {"three_entities"}
         };
     }
 
@@ -65,16 +65,16 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
         GatewayProject project = GatewayTestUtils.getGatewayProject(supergraphFileName, tmpDir);
         String generatedSrc = (new GatewayServiceGenerator(project)).generateSrc();
         String expectedSrc = Files.readString(expectedResources.resolve(
-                Paths.get(GatewayTestUtils.getCorrespondingFolderName(supergraphFileName), "service.bal")));
+                Paths.get(supergraphFileName, "service.bal")));
         Assert.assertEquals(generatedSrc, expectedSrc);
     }
 
     @DataProvider(name = "serviceGenerationDataProvider")
     public Object[][] getServiceGenerationDataProvider() {
         return new Object[][] {
-                {"SupergraphWithTwoEntities"},
-                {"SupergraphWithIDTypeFields"},
-                {"SupergraphWithThreeEntities"}
+                {"two_entities"},
+                {"two_entities_with_id_type_fields"},
+                {"three_entities"}
         };
     }
 
@@ -85,16 +85,16 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
         GraphQLSchema graphQLSchema = project.getSchema();
         String generatedSrc = (new GatewayTypeGenerator(graphQLSchema)).generateSrc();
         String expectedSrc = Files.readString(expectedResources.resolve(
-                Paths.get(GatewayTestUtils.getCorrespondingFolderName(supergraphFileName), "types.bal")));
+                Paths.get(supergraphFileName, "types.bal")));
         Assert.assertEquals(generatedSrc, expectedSrc);
     }
 
     @DataProvider(name = "GatewayTypeGenerationDataProvider")
     public Object[][] getGatewayTypeGenerationTestData() {
         return new Object[][] {
-                {"SupergraphWithTwoEntities"},
-                {"SupergraphWithIDTypeFields"},
-                {"SupergraphWithThreeEntities"}
+                {"two_entities"},
+                {"two_entities_with_id_type_fields"},
+                {"three_entities"}
         };
     }
 }

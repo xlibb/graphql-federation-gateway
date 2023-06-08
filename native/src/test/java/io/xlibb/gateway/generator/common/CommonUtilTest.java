@@ -56,11 +56,11 @@ public class CommonUtilTest extends GraphqlTest {
     @DataProvider(name = "SchemaAndTypeNamesProvider")
     public Object[][] getSchemaAndTypeNames() throws ValidationException, IOException {
         return new Object[][] {
-                {GatewayTestUtils.getGatewayProject("SupergraphWithTwoEntities", tmpDir),
+                {GatewayTestUtils.getGatewayProject("two_entities", tmpDir),
                         new String[] {"Astronaut", "Mission"}},
-                {GatewayTestUtils.getGatewayProject("SupergraphWithIDTypeFields", tmpDir),
+                {GatewayTestUtils.getGatewayProject("two_entities_with_id_type_fields", tmpDir),
                         new String[] {"Astronaut", "Mission"}},
-                {GatewayTestUtils.getGatewayProject("SupergraphWithThreeEntities", tmpDir),
+                {GatewayTestUtils.getGatewayProject("three_entities", tmpDir),
                         new String[] {"Review", "Product", "Category"}},
 
         };
@@ -77,7 +77,7 @@ public class CommonUtilTest extends GraphqlTest {
     @DataProvider(name = "SchemaAndQueryTypesProvider")
     public Object[][] getSchemaAndQueryTypes() throws ValidationException, IOException {
         return new Object[][] {
-                {GatewayTestUtils.getGatewayProject("SupergraphWithTwoEntities", tmpDir), new String[] {
+                {GatewayTestUtils.getGatewayProject("two_entities", tmpDir), new String[] {
                         "astronaut", "astronauts", "mission", "missions"
                 }}
         };
@@ -94,10 +94,10 @@ public class CommonUtilTest extends GraphqlTest {
     @DataProvider(name = "SchemaAndMutationTypesProvider")
     public Object[][] getSchemaAndMutationTypes() throws ValidationException, IOException {
         return new Object[][] {
-                {GatewayTestUtils.getGatewayProject("SupergraphWithTwoEntities", tmpDir), new String[] {
+                {GatewayTestUtils.getGatewayProject("two_entities", tmpDir), new String[] {
                         "addMission"
                 }},
-                {GatewayTestUtils.getGatewayProject("SupergraphWithIDTypeFields", tmpDir),
+                {GatewayTestUtils.getGatewayProject("two_entities_with_id_type_fields", tmpDir),
                         new String[] {}}
         };
     }
@@ -151,20 +151,20 @@ public class CommonUtilTest extends GraphqlTest {
 
     @DataProvider(name = "GatewayProjectFilesProvider")
     public Object[][] getProjects() {
-        Path gatewayResourceDir = Paths.get(resourceDir.toAbsolutePath().toString(), "expectedResults");
+        Path gatewayResourceDir = Paths.get(resourceDir.toAbsolutePath().toString(), "results");
         return new Object[][] {
                 {
-                        new File(gatewayResourceDir.resolve("supergraphWithTwoEntities")
+                        new File(gatewayResourceDir.resolve("two_entities")
                                 .toAbsolutePath().toString()),
                         "project01"
                 },
                 {
-                        new File(gatewayResourceDir.resolve("supergraphWithIDTypeFields")
+                        new File(gatewayResourceDir.resolve("two_entities_with_id_type_fields")
                                 .toAbsolutePath().toString()),
                         "project02"
                 },
                 {
-                        new File(gatewayResourceDir.resolve("supergraphWithThreeEntities")
+                        new File(gatewayResourceDir.resolve("three_entities")
                                 .toAbsolutePath().toString()),
                         "project03"
                 }

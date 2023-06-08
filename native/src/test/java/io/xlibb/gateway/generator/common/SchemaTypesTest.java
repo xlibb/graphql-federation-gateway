@@ -33,9 +33,9 @@ public class SchemaTypesTest extends GraphqlTest {
     @DataProvider(name = "SchemaTypesDataProvider")
     public Object[][] schemaTypesDataProvider() {
         return new Object[][] {
-                {"SupergraphWithTwoEntities", new String[] {"Astronaut", "Mission"}},
-                {"SupergraphWithIDTypeFields", new String[] {"Astronaut", "Mission"}},
-                {"SupergraphWithThreeEntities", new String[] {"Product", "Category", "Review"}}
+                {"two_entities", new String[] {"Astronaut", "Mission"}},
+                {"two_entities_with_id_type_fields", new String[] {"Astronaut", "Mission"}},
+                {"three_entities", new String[] {"Product", "Category", "Review"}}
         };
     }
 
@@ -57,12 +57,12 @@ public class SchemaTypesTest extends GraphqlTest {
     @DataProvider(name = "FieldNameProvider")
     public Object[][] getFieldData() {
         return new Object[][] {
-                {"SupergraphWithTwoEntities", "Astronaut", Map.ofEntries(
+                {"two_entities", "Astronaut", Map.ofEntries(
                         Map.entry("id", new Object[] {"ID", "ASTRONAUTS", true}),
                         Map.entry("name", new Object[] {"String", "ASTRONAUTS", false}),
                         Map.entry("missions", new Object[] {"Mission", "MISSIONS", false})
                 )},
-                {"SupergraphWithTwoEntities", "Mission", Map.ofEntries(
+                {"two_entities", "Mission", Map.ofEntries(
                         Map.entry("id", new Object[] {"Int", "MISSIONS", false}),
                         Map.entry("designation", new Object[] {"String", "MISSIONS", false}),
                         Map.entry("startDate", new Object[] {"String", "MISSIONS", false}),

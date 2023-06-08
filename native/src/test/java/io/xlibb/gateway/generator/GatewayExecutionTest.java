@@ -42,8 +42,8 @@ public class GatewayExecutionTest {
     private static final String MISSION_SUBGRAPH_URL = "http://localhost:5002";
 
     private static final Path supergraphSdl =
-            Paths.get("src/test/resources/supergraphSchemas/SupergraphWithTwoEntities.graphql");
-    private static final Path services = Paths.get("src/test/resources/subgraphServices");
+            Paths.get("src/test/resources/supergraph_schemas/two_entities.graphql");
+    private static final Path services = Paths.get("src/test/resources/sample_subgraph_services");
 
     private Path tmpDir;
     Process astronautServiceProcess;
@@ -57,11 +57,11 @@ public class GatewayExecutionTest {
         gatewayProcess = new ProcessBuilder("java", "-jar", gatewayExec.getAbsolutePath()).start();
         astronautServiceProcess = new ProcessBuilder("java", "-jar",
                 GatewayTestUtils.getBallerinaExecutableJar(
-                                services.resolve("astronautService").toAbsolutePath(), tmpDir)
+                                services.resolve("astronaut_service").toAbsolutePath(), tmpDir)
                         .getAbsolutePath()).start();
         missionsServiceProcess = new ProcessBuilder("java", "-jar",
                 GatewayTestUtils.getBallerinaExecutableJar(
-                                services.resolve("missionsService").toAbsolutePath(), tmpDir)
+                                services.resolve("missions_service").toAbsolutePath(), tmpDir)
                         .getAbsolutePath()).start();
 
         GatewayTestUtils.waitTillUrlIsAvailable(gatewayProcess, ASTRONAUT_SUBGRAPH_URL);
@@ -78,35 +78,35 @@ public class GatewayExecutionTest {
     }
 
     @Test(description = "Test gateway with query requests",
-            dataProvider = "QueryRequestResponseDataProvider")
-    public void testGatewayQueryExecution(String requestFile, String responseFile) throws IOException {
-        String query = GatewayTestUtils.getRequestContent(requestFile);
-        String expectedResponse = GatewayTestUtils.getResponseContent(responseFile);
+            dataProvider = "QueryTestDataProvider")
+    public void testGatewayQueryExecution(String testName) throws IOException {
+        String query = GatewayTestUtils.getRequestContent(testName);
+        String expectedResponse = GatewayTestUtils.getResponseContent(testName);
         String response = GatewayTestUtils.getGraphqlQueryResponse(GATEWAY_URL, query);
-        Assert.assertEquals(response.toString(), expectedResponse);
+        Assert.assertEquals(response, expectedResponse);
     }
 
-    @DataProvider(name = "QueryRequestResponseDataProvider")
-    public Object[][] getQueryFileNames() {
-        return new Object[][] {
-                {"request1", "response1"},
-                {"request2", "response2"},
+    @DataProvider(name = "QueryTestDataProvider")
+    public Object[] getQueryFileNames() {
+        return new Object[] {
+                "query_one_subgraph_service",
+                "query_two_subgraph_services"
         };
     }
 
     @Test(description = "Test gateway with mutation requests",
-            dataProvider = "MutationRequestResponseDataProvider")
-    public void testGatewayMutationExecution(String requestFile, String responseFile) throws IOException {
-        String query = GatewayTestUtils.getRequestContent(requestFile);
-        String expectedResponse = GatewayTestUtils.getResponseContent(responseFile);
+            dataProvider = "MutationTestDataProvider")
+    public void testGatewayMutationExecution(String testName) throws IOException {
+        String query = GatewayTestUtils.getRequestContent(testName);
+        String expectedResponse = GatewayTestUtils.getResponseContent(testName);
         String response = GatewayTestUtils.getGraphqlMutationResponse(GATEWAY_URL, query);
-        Assert.assertEquals(response.toString(), expectedResponse);
+        Assert.assertEquals(response, expectedResponse);
     }
 
-    @DataProvider(name = "MutationRequestResponseDataProvider")
-    public Object[][] getMutationFileNames() {
-        return new Object[][] {
-                {"request3", "response3"}
+    @DataProvider(name = "MutationTestDataProvider")
+    public Object[] getMutationFileNames() {
+        return new Object[] {
+                "mutation_with_query_two_subgraph_services_to_three_levels"
         };
     }
 

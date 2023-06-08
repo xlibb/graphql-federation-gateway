@@ -5,7 +5,7 @@ package io.xlibb.gateway.generator.common;
  */
 public class Constants {
     public static final String SERVICE_FILE_NAME = "service.bal";
-    public static final String QUERY_PLAN_FILE_NAME = "queryPlan.bal";
+    public static final String QUERY_PLAN_FILE_NAME = "query_plan.bal";
     public static final String TYPES_FILE_NAME = "types.bal";
     public static final String QUERY_PLACEHOLDER = "@\\{query}";
     public static final String FUNCTION_PARAM_PLACEHOLDER = "@\\{params}";
