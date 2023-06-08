@@ -93,15 +93,17 @@ public class GatewayTestUtils {
     }
 
     public static String getResponseContent(String filename) throws IOException {
-        return Files.readString(sampleResponseResourceDir.resolve(filename + ".json"));
+        return replaceWhiteSpacesAndNewLines(Files.readString(sampleResponseResourceDir.resolve(filename + ".json")));
     }
 
     public static String getGraphqlQueryResponse(String graphqlUrl, String query) throws IOException {
-        return getGraphqlResponse(graphqlUrl, ("{\"query\":\"{" + query + "}\"}").getBytes());
+        return replaceWhiteSpacesAndNewLines(getGraphqlResponse(graphqlUrl,
+                ("{\"query\":\"{" + query + "}\"}").getBytes()));
     }
 
     public static String getGraphqlMutationResponse(String grapqlUrl, String query) throws IOException {
-        return getGraphqlResponse(grapqlUrl, ("{\"query\":\"" + query + "\"}").getBytes());
+        return replaceWhiteSpacesAndNewLines(getGraphqlResponse(grapqlUrl,
+                ("{\"query\":\"" + query + "\"}").getBytes()));
     }
 
     private static String getGraphqlResponse(String grapqlUrl, byte[] body) throws IOException {
@@ -146,5 +148,9 @@ public class GatewayTestUtils {
     public static String getCorrespondingFolderName(String schemaFileName) {
         char firstChar = schemaFileName.charAt(0);
         return Character.toLowerCase(firstChar) + schemaFileName.substring(1);
+    }
+
+    public static String replaceWhiteSpacesAndNewLines(String str) {
+        return str.replaceAll("\\s+", "").replaceAll("\\n+", "");
     }
 }

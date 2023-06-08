@@ -1,1 +1,8 @@
-{"data":{"astronaut":{"id":1, "name":"Buzz Aldrin"}}}
+{
+  "data": {
+    "astronaut": {
+      "id": 1,
+      "name": "Buzz Aldrin"
+    }
+  }
+}
