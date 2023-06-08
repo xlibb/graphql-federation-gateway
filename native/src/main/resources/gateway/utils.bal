@@ -32,8 +32,14 @@ isolated function getKeyValueString(map<json> fieldMap) returns string {
 }
 
 // Prepare query string to resolve by query.
-isolated function wrapwithQuery(string root, string fieldQuery, map<string>? args = ()) returns string {
+isolated function wrapwithQuery(string root, string? fieldQuery = (), map<string>? args = ()) returns string {
     if args is () {
+        if fieldQuery is () {
+            return string `query
+                {
+                    ${root}
+                }`;
+        }
         return string `query
             {
                 ${root}{
@@ -45,6 +51,12 @@ isolated function wrapwithQuery(string root, string fieldQuery, map<string>? arg
         foreach var [key, value] in args.entries() {
             argsList.push(string `${key}: ${value}`);
         }
+        if fieldQuery is () {
+            return string `query
+                {
+                    ${root}(${string:'join(", ", ...argsList)})
+                }`;
+        }
         return string `query
             {
                 ${root}(${string:'join(", ", ...argsList)}){
@@ -54,8 +66,14 @@ isolated function wrapwithQuery(string root, string fieldQuery, map<string>? arg
     }
 }
 
-isolated function wrapwithMutation(string root, string fieldQuery, map<string>? args = ()) returns string {
+isolated function wrapwithMutation(string root, string? fieldQuery = (), map<string>? args = ()) returns string {
     if args is () {
+        if fieldQuery is () {
+            return string `mutation
+                {
+                    ${root}
+                }`;
+        }
         return string `mutation
             {
                 ${root}{
@@ -66,6 +84,12 @@ isolated function wrapwithMutation(string root, string fieldQuery, map<string>? 
         string[] argsList = [];
         foreach var [key, value] in args.entries() {
             argsList.push(string `${key}: ${value}`);
+        }
+        if fieldQuery is () {
+            return string `mutation
+                {
+                    ${root}(${string:'join(", ", ...argsList)})
+                }`;
         }
         return string `mutation
             {

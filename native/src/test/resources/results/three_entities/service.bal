@@ -25,13 +25,13 @@ isolated service on new graphql:Listener(PORT) {
         log:printInfo(string `💃 Server ready at port: ${PORT}`);
     }
 
-    isolated resource function get product(graphql:Field 'field, string id) returns Product|error {
+    isolated resource function get product(graphql:Field 'field, string id) returns Product?|error {
         QueryFieldClassifier classifier = new ('field, queryPlan, PRODUCT);
         string fieldString = classifier.getFieldString();
         UnresolvableField[] propertiesNotResolved = classifier.getUnresolvableFields();
         string queryString = wrapwithQuery("product", fieldString, {"id": getParamAsString(id)});
         productResponse response = check PRODUCT_CLIENT->execute(queryString);
-        Product result = response.data.product;
+        Product? result = response.data.product;
         Resolver resolver = new (queryPlan, result.toJson(), "Product", propertiesNotResolved, ["product"]);
         json|error finalResult = resolver.getResult();
         if finalResult is error {

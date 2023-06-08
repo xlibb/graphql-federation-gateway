@@ -55,19 +55,19 @@ public class CommonUtilTest extends GraphqlTest {
 
     @DataProvider(name = "SchemaAndTypeNamesProvider")
     public Object[][] getSchemaAndTypeNames() throws ValidationException, IOException {
-        return new Object[][] {
+        return new Object[][]{
                 {GatewayTestUtils.getGatewayProject("two_entities", tmpDir),
-                        new String[] {"Astronaut", "Mission"}},
+                        new String[]{"Astronaut", "Mission"}},
                 {GatewayTestUtils.getGatewayProject("two_entities_with_id_type_fields", tmpDir),
-                        new String[] {"Astronaut", "Mission"}},
+                        new String[]{"Astronaut", "Mission"}},
                 {GatewayTestUtils.getGatewayProject("three_entities", tmpDir),
-                        new String[] {"Review", "Product", "Category"}},
+                        new String[]{"Review", "Product", "Category"}},
 
         };
     }
 
     @Test(description = "Test get query types", dataProvider = "SchemaAndQueryTypesProvider")
-    public void textGetQueryTypes(GatewayProject project, String[] queryTypes) {
+    public void testGetQueryTypes(GatewayProject project, String[] queryTypes) {
         Object[] queryTypeNames = CommonUtils.getQueryTypes(project.getSchema()).stream().map(
                 field -> ((GraphQLFieldDefinition) field).getName()
         ).toArray();
@@ -76,9 +76,9 @@ public class CommonUtilTest extends GraphqlTest {
 
     @DataProvider(name = "SchemaAndQueryTypesProvider")
     public Object[][] getSchemaAndQueryTypes() throws ValidationException, IOException {
-        return new Object[][] {
-                {GatewayTestUtils.getGatewayProject("two_entities", tmpDir), new String[] {
-                        "astronaut", "astronauts", "mission", "missions"
+        return new Object[][]{
+                {GatewayTestUtils.getGatewayProject("two_entities", tmpDir), new String[]{
+                        "astronaut", "astronauts", "mission", "missions", "serviceName", "isExist"
                 }}
         };
     }
@@ -93,12 +93,12 @@ public class CommonUtilTest extends GraphqlTest {
 
     @DataProvider(name = "SchemaAndMutationTypesProvider")
     public Object[][] getSchemaAndMutationTypes() throws ValidationException, IOException {
-        return new Object[][] {
-                {GatewayTestUtils.getGatewayProject("two_entities", tmpDir), new String[] {
-                        "addMission"
+        return new Object[][]{
+                {GatewayTestUtils.getGatewayProject("two_entities", tmpDir), new String[]{
+                        "addMission", "setServiceName"
                 }},
                 {GatewayTestUtils.getGatewayProject("two_entities_with_id_type_fields", tmpDir),
-                        new String[] {}}
+                        new String[]{}}
         };
     }
 
@@ -123,7 +123,7 @@ public class CommonUtilTest extends GraphqlTest {
 
     @DataProvider(name = "ValueTypesProvider")
     public Object[][] getValueTypes() {
-        return new Object[][] {
+        return new Object[][]{
                 {new IntValue(BigInteger.ONE), "1"},
                 {new StringValue("Hello"), "\"Hello\""},
                 {new BooleanValue(true), "true"},
@@ -152,7 +152,7 @@ public class CommonUtilTest extends GraphqlTest {
     @DataProvider(name = "GatewayProjectFilesProvider")
     public Object[][] getProjects() {
         Path gatewayResourceDir = Paths.get(resourceDir.toAbsolutePath().toString(), "results");
-        return new Object[][] {
+        return new Object[][]{
                 {
                         new File(gatewayResourceDir.resolve("two_entities")
                                 .toAbsolutePath().toString()),
@@ -173,11 +173,27 @@ public class CommonUtilTest extends GraphqlTest {
 
     @DataProvider(name = "InvalidGatewayProjectFilesProvider")
     public Object[][] getinvalidProjects() {
-        return new Object[][] {
+        return new Object[][]{
                 {
-                        new Path[] {},
+                        new Path[]{},
                         "projectWithMissingFiles"
                 }
+        };
+    }
+
+    @Test(description = "Test get ballerina type name", dataProvider = "BallerinaTypeProvider")
+    public void testGetBallerinaTypeName(String type, String expectedName) {
+        Assert.assertEquals(CommonUtils.getBallerinaTypeName(type), expectedName);
+    }
+
+    @DataProvider(name = "BallerinaTypeProvider")
+    public Object[][] getBallerinaTypes() {
+        return new Object[][]{
+                {"Int", "int"},
+                {"String", "string"},
+                {"Boolean", "boolean"},
+                {"Float", "float"},
+                {"ID", "any"}
         };
     }
 }

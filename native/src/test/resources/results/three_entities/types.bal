@@ -20,7 +20,7 @@ public type Review record {|
 |};
 
 public type productResponse record {
-    record {|Product product;|} data;
+    record {|Product? product;|} data;
 };
 
 public type productsResponse record {

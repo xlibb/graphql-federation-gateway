@@ -24,6 +24,7 @@ import graphql.schema.GraphQLAppliedDirective;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLSchemaElement;
+import graphql.schema.GraphQLType;
 import io.ballerina.compiler.syntax.tree.ImportDeclarationNode;
 import io.ballerina.compiler.syntax.tree.ModuleMemberDeclarationNode;
 import io.ballerina.compiler.syntax.tree.ModulePartNode;
@@ -71,13 +72,15 @@ import static io.xlibb.gateway.generator.common.Constants.REMOTE_FUNCTION_TEMPLA
 import static io.xlibb.gateway.generator.common.Constants.RESOURCE_FUNCTIONS_PLACEHOLDER;
 import static io.xlibb.gateway.generator.common.Constants.RESOURCE_FUNCTION_TEMPLATE_FILE;
 import static io.xlibb.gateway.generator.common.Constants.RESPONSE_TYPE_PLACEHOLDER;
+import static io.xlibb.gateway.generator.common.Constants.SCALAR_RETURN_TYPE_REMOTE_FUNCTION_TEMPLATE_FILE;
+import static io.xlibb.gateway.generator.common.Constants.SCALAR_RETURN_TYPE_RESOURCE_FUNCTION_TEMPLATE_FILE;
 import static io.xlibb.gateway.generator.common.Constants.SERVICE_DECLARATION_TEMPLATE_FILE;
 import static io.xlibb.gateway.generator.common.Constants.URL_PLACEHOLDER;
 
 enum FunctionType {
     QUERY,
     MUTATION
-};
+}
 
 /**
  * Class to generate service code for the gateway.
@@ -148,13 +151,25 @@ public class GatewayServiceGenerator {
             throws IOException, GatewayGenerationException {
         String template;
         String type;
+        GraphQLType returnType = ((GraphQLFieldDefinition) graphQLSchemaElement).getType();
+
         if (functionType == FunctionType.QUERY) {
-            template = Files.readString(getResourceTemplateFilePath(project.getTempDir(),
-                    RESOURCE_FUNCTION_TEMPLATE_FILE));
+            if (CommonUtils.isScalarType(returnType)) {
+                template = Files.readString(getResourceTemplateFilePath(project.getTempDir(),
+                        SCALAR_RETURN_TYPE_RESOURCE_FUNCTION_TEMPLATE_FILE));
+            } else {
+                template = Files.readString(getResourceTemplateFilePath(project.getTempDir(),
+                        RESOURCE_FUNCTION_TEMPLATE_FILE));
+            }
             type = "Query";
         } else if (functionType == FunctionType.MUTATION) {
-            template = Files.readString(getResourceTemplateFilePath(project.getTempDir(),
-                    REMOTE_FUNCTION_TEMPLATE_FILE));
+            if (CommonUtils.isScalarType(returnType)) {
+                template = Files.readString(getResourceTemplateFilePath(project.getTempDir(),
+                        SCALAR_RETURN_TYPE_REMOTE_FUNCTION_TEMPLATE_FILE));
+            } else {
+                template = Files.readString(getResourceTemplateFilePath(project.getTempDir(),
+                        REMOTE_FUNCTION_TEMPLATE_FILE));
+            }
             type = "Mutation";
         } else {
             throw new GatewayGenerationException("Unsupported function type");

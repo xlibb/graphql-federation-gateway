@@ -24,7 +24,15 @@ public type astronautsResponse record {
 };
 
 public type astronautResponse record {
-    record {|Astronaut astronaut;|} data;
+    record {|Astronaut? astronaut;|} data;
+};
+
+public type serviceNameResponse record {
+    record {|string serviceName;|} data;
+};
+
+public type isExistResponse record {
+    record {|boolean isExist;|} data;
 };
 
 public type missionsResponse record {
@@ -37,4 +45,8 @@ public type missionResponse record {
 
 public type addMissionResponse record {
     record {|Mission addMission;|} data;
+};
+
+public type setServiceNameResponse record {
+    record {|string setServiceName;|} data;
 };

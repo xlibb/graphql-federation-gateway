@@ -29,7 +29,7 @@ public class GatewayCodeGenerator {
             "resolver.bal",
             "utils.bal",
             "records.bal",
-            "queryFieldClassifier.bal"
+            "query_field_classifier.bal"
     };
 
     public static File generateGatewayJar(GatewayProject project) throws GatewayGenerationException {
