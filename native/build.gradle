@@ -134,7 +134,7 @@ task getBalHomePath {
                     "${project.buildDir}/ballerina-${ballerinaLangVersion}-swan-lake/distributions/ballerina-${ballerinaLangVersion}"
         } else {
             getBalHomePath.ext.balHomePath =
-                    "${System.getProperty("BALLERINA_HOME")}/distributions/ballerina-${ballerinaLangVersion}"
+                    "${System.getenv("BALLERINA_HOME")}/distributions/ballerina-${ballerinaLangVersion}"
         }
     }
 }
