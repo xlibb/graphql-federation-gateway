@@ -78,7 +78,7 @@ public class CommonUtilTest extends GraphqlTest {
     public Object[][] getSchemaAndQueryTypes() throws ValidationException, IOException {
         return new Object[][] {
                 {GatewayTestUtils.getGatewayProject("two_entities", tmpDir), new String[] {
-                        "astronaut", "astronauts", "mission", "missions", "serviceName", "setServiceName", "isExist"
+                        "astronaut", "astronauts", "mission", "missions", "serviceName", "isExist"
                 }}
         };
     }
@@ -95,7 +95,7 @@ public class CommonUtilTest extends GraphqlTest {
     public Object[][] getSchemaAndMutationTypes() throws ValidationException, IOException {
         return new Object[][] {
                 {GatewayTestUtils.getGatewayProject("two_entities", tmpDir), new String[] {
-                        "addMission"
+                        "addMission", "setServiceName"
                 }},
                 {GatewayTestUtils.getGatewayProject("two_entities_with_id_type_fields", tmpDir),
                         new String[] {}}

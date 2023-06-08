@@ -63,14 +63,6 @@ isolated service on new graphql:Listener(PORT) {
         }
         return response.data.serviceName;
     }
-    isolated resource function get setServiceName(graphql:Field 'field, graphql:Context context, string name) returns string|error {
-        string queryString = wrapwithQuery("setServiceName", (), {"name": getParamAsString(name)});
-        setServiceNameResponse|graphql:ClientError response = ASTRONAUTS_CLIENT->execute(queryString);
-        if response is graphql:ClientError {
-            return error("Unable to resolve : setServiceName");
-        }
-        return response.data.setServiceName;
-    }
     isolated resource function get isExist(graphql:Field 'field, graphql:Context context, string name) returns boolean|error {
         string queryString = wrapwithQuery("isExist", (), {"name": getParamAsString(name)});
         isExistResponse|graphql:ClientError response = ASTRONAUTS_CLIENT->execute(queryString);
@@ -123,5 +115,13 @@ isolated service on new graphql:Listener(PORT) {
         } else {
             return finalResult.cloneWithType();
         }
+    }
+    isolated remote function setServiceName(graphql:Field 'field, graphql:Context context, string name) returns string|error {
+        string queryString = wrapwithMutation("setServiceName", (), {"name": getParamAsString(name)});
+        setServiceNameResponse|graphql:ClientError response = ASTRONAUTS_CLIENT->execute(queryString);
+        if response is graphql:ClientError {
+            return error("Unable to resolve : setServiceName");
+        }
+        return response.data.setServiceName;
     }
 }

@@ -91,7 +91,7 @@ public class GatewayExecutionTest {
         return new Object[] {
                 "query_one_subgraph_service",
                 "query_two_subgraph_services",
-                "query_simple_string",
+                "query_simple_scalar_with_parameter",
         };
     }
 
@@ -107,7 +107,8 @@ public class GatewayExecutionTest {
     @DataProvider(name = "MutationTestDataProvider")
     public Object[] getMutationFileNames() {
         return new Object[] {
-                "mutation_with_query_two_subgraph_services_to_three_levels"
+                "mutation_with_query_two_subgraph_services_to_three_levels",
+                "mutation_simple_string"
         };
     }
 

@@ -88,15 +88,15 @@ input MissionInput @join__type(graph: MISSIONS) {
     crewIds: [Int!]!
 }
 
-type Mutation @join__type(graph: MISSIONS) {
-    addMission(missionInput: MissionInput!): Mission!
+type Mutation @join__type(graph: ASTRONAUTS) @join__type(graph: MISSIONS) {
+    addMission(missionInput: MissionInput!): Mission! @join__field(graph: MISSIONS)
+    setServiceName(name: String!): String! @join__field(graph: ASTRONAUTS)
 }
 
 type Query @join__type(graph: ASTRONAUTS) @join__type(graph: MISSIONS) {
     astronauts: [Astronaut!]! @join__field(graph: ASTRONAUTS)
     astronaut(id: Int!): Astronaut @join__field(graph: ASTRONAUTS)
     serviceName: String! @join__field(graph: ASTRONAUTS)
-    setServiceName(name: String!): String! @join__field(graph: ASTRONAUTS)
     isExist(name: String!): Boolean! @join__field(graph: ASTRONAUTS)
     missions: [Mission!]! @join__field(graph: MISSIONS)
     mission(id: Int!): Mission! @join__field(graph: MISSIONS)

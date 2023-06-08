@@ -31,10 +31,6 @@ public type serviceNameResponse record {
     record {|string serviceName;|} data;
 };
 
-public type setServiceNameResponse record {
-    record {|string setServiceName;|} data;
-};
-
 public type isExistResponse record {
     record {|boolean isExist;|} data;
 };
@@ -49,4 +45,8 @@ public type missionResponse record {
 
 public type addMissionResponse record {
     record {|Mission addMission;|} data;
+};
+
+public type setServiceNameResponse record {
+    record {|string setServiceName;|} data;
 };
