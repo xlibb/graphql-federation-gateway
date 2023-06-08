@@ -31,8 +31,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Utility class for Graphql tests.
@@ -74,32 +72,6 @@ public class GraphqlTest {
     public void clean() {
         System.setErr(null);
         System.setOut(null);
-    }
-
-    protected String readOutput(boolean status) throws IOException {
-        String output = this.console.toString();
-        this.console.close();
-        this.console = new ByteArrayOutputStream();
-        this.printStream = new PrintStream(this.console);
-        if (!status) {
-            PrintStream out = System.out;
-            out.println(output);
-        }
-        return output;
-    }
-
-    protected String readContent(Path path) throws IOException {
-        Stream<String> lines = Files.lines(path);
-        String output = lines.collect(Collectors.joining(System.lineSeparator()));
-        lines.close();
-        return output.trim().replaceAll("\\s+", "").replaceAll(System.lineSeparator(), "");
-    }
-
-    protected String readContentWithFormat(Path filePath) throws IOException {
-        Stream<String> schemaLines = Files.lines(filePath);
-        String schemaContent = schemaLines.collect(Collectors.joining(System.getProperty("line.separator")));
-        schemaLines.close();
-        return schemaContent;
     }
 
 }

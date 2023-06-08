@@ -124,6 +124,21 @@ task downloadBallerinaDist(type: Download) {
     }
 }
 
+task getBalHomePath {
+    dependsOn {
+        extractBallerinaDist
+    }
+    doLast {
+        if (checkBallerinaVersion.shouldDownload){
+            getBalHomePath.ext.balHomePath =
+                    "${project.buildDir}/ballerina-${ballerinaLangVersion}-swan-lake/distributions/ballerina-${ballerinaLangVersion}"
+        } else {
+            getBalHomePath.ext.balHomePath =
+                    "${System.getProperty("BALLERINA_HOME")}/distributions/ballerina-${ballerinaLangVersion}"
+        }
+    }
+}
+
 task extractBallerinaDist(type: Copy) {
     dependsOn downloadBallerinaDist
     onlyIf {
@@ -138,7 +153,6 @@ task extractBallerinaDist(type: Copy) {
     into project.buildDir
     doLast {
         println "Ballerina distribution extracted successfully."
-        System.setProperty("BALLERINA_HOME", "${project.buildDir}/${fileName}")
     }
 }
 
@@ -166,13 +180,13 @@ task checkBallerinaVersion(type: Exec) {
 
 test {
     dependsOn {
-        extractBallerinaDist
+        getBalHomePath
     }
     doFirst {
-        println "Ballerina distribution path: ${System.getProperty("BALLERINA_HOME")}/distributions/ballerina-${ballerinaLangVersion}"
+        println "Ballerina Home Path: ${getBalHomePath.balHomePath}"
         systemProperties = [
                 "target.dir"    : project.buildDir,
-                "ballerina.home": "${System.getProperty("BALLERINA_HOME")}/distributions/ballerina-${ballerinaLangVersion}"
+                "ballerina.home": getBalHomePath.balHomePath
         ]
     }
 

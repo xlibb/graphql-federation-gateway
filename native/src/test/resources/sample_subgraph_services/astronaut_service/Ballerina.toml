@@ -1,4 +1,4 @@
 [package]
-org = "graphql_tool_test"
+org = "federation_gateway_test"
 name = "astronaut_service"
 version = "0.1.0"
