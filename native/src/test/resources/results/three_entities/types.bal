@@ -1,3 +1,5 @@
+import ballerina/graphql;
+
 public type Category record {|
     string id?;
     string title?;
@@ -20,13 +22,16 @@ public type Review record {|
 |};
 
 public type productResponse record {
-    record {|Product? product;|} data;
+    graphql:ErrorDetail[] errors?;
+    record {|Product product;|} data;
 };
 
 public type productsResponse record {
+    graphql:ErrorDetail[] errors?;
     record {|Product[] products;|} data;
 };
 
 public type reviewsResponse record {
+    graphql:ErrorDetail[] errors?;
     record {|Review[] reviews;|} data;
 };

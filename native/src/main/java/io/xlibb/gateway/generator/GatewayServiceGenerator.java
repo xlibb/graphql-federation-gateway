@@ -181,7 +181,7 @@ public class GatewayServiceGenerator {
                 .replaceAll(FUNCTION_PARAM_PLACEHOLDER,
                         getArgumentString(graphQLSchemaElement))
                 .replaceAll(RESPONSE_TYPE_PLACEHOLDER,
-                        CommonUtils.getTypeNameFromGraphQLType(
+                        CommonUtils.getTypeFromGraphQLType(
                                 ((GraphQLFieldDefinition) graphQLSchemaElement).getType()))
                 .replaceAll(BASIC_RESPONSE_TYPE_PLACEHOLDER,
                         CommonUtils.getBasicTypeNameFromGraphQLType(
