@@ -37,6 +37,8 @@ public class Constants {
     public static final String MATCH_CLIENT_STATEMENTS_PLACEHOLDER = "@\\{matchClientStatements}";
     public static final String PORT_PLACEHOLDER = "@\\{port}";
     public static final String CONFIGURABLE_PORT_STATEMENT = "configurable int PORT = " + PORT_PLACEHOLDER + ";";
+    public static final String INITIAL_RESULT = "@\\{initialResult}";
+    public static final String INITIAL_RESULT_ASSIGNMENT = "@\\{initialResultAssignment}";
     public static final String BALLERINA_GRAPHQL_IMPORT_STATEMENT = "import ballerina/graphql;";
     public static final String BALLERINA_LOG_IMPORT_STATEMENT = "import ballerina/log;";
     public static final String GRAPHQL_CLIENT_DECLARATION_STATEMENT =
@@ -46,8 +48,6 @@ public class Constants {
             + " = \"" + CLIENT_NAME_VALUE_PLACEHOLDER + "\";";
     public static final String MATCH_CLIENT_STATEMENT_TEMPLATE =
             "\"" + CLIENT_NAME_VALUE_PLACEHOLDER + "\" => {return " + CLIENT_NAME_PLACEHOLDER + "_CLIENT;}";
-
-    // File names for templates
     public static final String RESOURCE_FUNCTION_TEMPLATE_FILE = "resource_function.bal.partial";
     public static final String SCALAR_RETURN_TYPE_RESOURCE_FUNCTION_TEMPLATE_FILE =
             "scalar_return_type_resource_function.bal.partial";

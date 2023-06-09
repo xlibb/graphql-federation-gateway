@@ -25,49 +25,64 @@ isolated service on new graphql:Listener(PORT) {
         log:printInfo(string `💃 Server ready at port: ${PORT}`);
     }
 
-    isolated resource function get product(graphql:Field 'field, string id) returns Product?|error {
+    isolated resource function get product(graphql:Field 'field, graphql:Context context, string id) returns Product?|error {
         QueryFieldClassifier classifier = new ('field, queryPlan, PRODUCT);
         string fieldString = classifier.getFieldString();
         UnresolvableField[] propertiesNotResolved = classifier.getUnresolvableFields();
         string queryString = wrapwithQuery("product", fieldString, {"id": getParamAsString(id)});
-        productResponse response = check PRODUCT_CLIENT->execute(queryString);
-        Product? result = response.data.product;
-        Resolver resolver = new (queryPlan, result.toJson(), "Product", propertiesNotResolved, ["product"]);
-        json|error finalResult = resolver.getResult();
-        if finalResult is error {
-            return finalResult;
+        productResponse|graphql:ClientError response = PRODUCT_CLIENT->execute(queryString);
+        map<json> result = {"id": id};
+        graphql:ErrorDetail[] errors = [];
+        if response is graphql:ClientError {
+            appendUnableToResolveErrorDetail(errors, 'field);
         } else {
-            return finalResult.cloneWithType();
+            mergeToResultJson(result, <map<json>>response.data.product.toJson());
+            appendErrorDetailsFromResponse(errors, response?.errors);
         }
+        Resolver resolver = new (queryPlan, result.toJson(), "Product", propertiesNotResolved, ["product"], errors);
+        json finalResult = resolver.getResult();
+        addErrorsToGraphqlContext(context, errors);
+        return finalResult.cloneWithType();
     }
-    isolated resource function get products(graphql:Field 'field) returns Product[]|error {
+
+    isolated resource function get products(graphql:Field 'field, graphql:Context context) returns Product[]|error {
         QueryFieldClassifier classifier = new ('field, queryPlan, PRODUCT);
         string fieldString = classifier.getFieldString();
         UnresolvableField[] propertiesNotResolved = classifier.getUnresolvableFields();
         string queryString = wrapwithQuery("products", fieldString);
-        productsResponse response = check PRODUCT_CLIENT->execute(queryString);
-        Product[] result = response.data.products;
-        Resolver resolver = new (queryPlan, result.toJson(), "Product", propertiesNotResolved, ["products"]);
-        json|error finalResult = resolver.getResult();
-        if finalResult is error {
-            return finalResult;
+        productsResponse|graphql:ClientError response = PRODUCT_CLIENT->execute(queryString);
+        Product[] result = [];
+        graphql:ErrorDetail[] errors = [];
+        if response is graphql:ClientError {
+            appendUnableToResolveErrorDetail(errors, 'field);
         } else {
-            return finalResult.cloneWithType();
+            result = response.data.products;
+            appendErrorDetailsFromResponse(errors, response?.errors);
         }
+        Resolver resolver = new (queryPlan, result.toJson(), "Product", propertiesNotResolved, ["products"], errors);
+        json finalResult = resolver.getResult();
+        addErrorsToGraphqlContext(context, errors);
+        return finalResult.cloneWithType();
     }
-    isolated resource function get reviews(graphql:Field 'field, string productId) returns Review[]|error {
+
+    isolated resource function get reviews(graphql:Field 'field, graphql:Context context, string productId) returns Review[]|error {
         QueryFieldClassifier classifier = new ('field, queryPlan, REVIEWS);
         string fieldString = classifier.getFieldString();
         UnresolvableField[] propertiesNotResolved = classifier.getUnresolvableFields();
         string queryString = wrapwithQuery("reviews", fieldString, {"productId": getParamAsString(productId)});
-        reviewsResponse response = check REVIEWS_CLIENT->execute(queryString);
-        Review[] result = response.data.reviews;
-        Resolver resolver = new (queryPlan, result.toJson(), "Review", propertiesNotResolved, ["reviews"]);
-        json|error finalResult = resolver.getResult();
-        if finalResult is error {
-            return finalResult;
+        reviewsResponse|graphql:ClientError response = REVIEWS_CLIENT->execute(queryString);
+        Review[] result = [];
+        graphql:ErrorDetail[] errors = [];
+        if response is graphql:ClientError {
+            appendUnableToResolveErrorDetail(errors, 'field);
         } else {
-            return finalResult.cloneWithType();
+            result = response.data.reviews;
+            appendErrorDetailsFromResponse(errors, response?.errors);
         }
+        Resolver resolver = new (queryPlan, result.toJson(), "Review", propertiesNotResolved, ["reviews"], errors);
+        json finalResult = resolver.getResult();
+        addErrorsToGraphqlContext(context, errors);
+        return finalResult.cloneWithType();
     }
+
 }

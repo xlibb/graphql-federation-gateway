@@ -135,10 +135,10 @@ isolated function getParamAsString(anydata param) returns string {
 
 isolated function addErrorsToGraphqlContext(graphql:Context context, graphql:ErrorDetail|graphql:ErrorDetail[] errors) {
     if errors is graphql:ErrorDetail {
-        context.addError(errors);
+        graphql:__addError(context, errors);
     } else {
         foreach graphql:ErrorDetail e in errors {
-            context.addError(e);
+            graphql:__addError(context, e);
         }
     }
 }
@@ -160,5 +160,15 @@ isolated function appendErrorDetailsFromResponse(graphql:ErrorDetail[] errors, g
             message: e.message,
             path: e.path
         });
+    }
+}
+
+isolated function mergeToResultJson(map<json> resultJson, map<json> responseJson) {
+    foreach var [key, value] in responseJson.entries() {
+        if resultJson[key] is map<json> {
+            mergeToResultJson(<map<json>>resultJson[key], <map<json>>value);
+        } else {
+            resultJson[key] = value;
+        }
     }
 }
