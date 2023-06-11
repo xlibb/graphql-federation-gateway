@@ -79,7 +79,7 @@ public class GatewayExecutionTest {
 
     @Test(description = "Test gateway with query requests",
             dataProvider = "QueryTestDataProvider")
-    public void testGatewayQueryExecution(String testName) throws IOException {
+    public void testGatewayQueryExecution(String testName) throws IOException, ValidationException {
         String query = GatewayTestUtils.getRequestContent(testName);
         String expectedResponse = GatewayTestUtils.getResponseContent(testName);
         String response = GatewayTestUtils.getGraphqlQueryResponse(GATEWAY_URL, query);
@@ -97,7 +97,7 @@ public class GatewayExecutionTest {
 
     @Test(description = "Test gateway with mutation requests",
             dataProvider = "MutationTestDataProvider")
-    public void testGatewayMutationExecution(String testName) throws IOException {
+    public void testGatewayMutationExecution(String testName) throws IOException, ValidationException {
         String query = GatewayTestUtils.getRequestContent(testName);
         String expectedResponse = GatewayTestUtils.getResponseContent(testName);
         String response = GatewayTestUtils.getGraphqlMutationResponse(GATEWAY_URL, query);

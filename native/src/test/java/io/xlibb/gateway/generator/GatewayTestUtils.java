@@ -89,7 +89,13 @@ public class GatewayTestUtils {
     }
 
     public static String getRequestContent(String filename) throws IOException {
-        return Files.readString(sampleRequestResourceDir.resolve(filename + ".graphql"));
+        String content = Files.readString(sampleRequestResourceDir.resolve(filename + ".graphql")).trim();
+        content = content.replace("\"", "\\\"");
+        if (content.startsWith("query")) {
+            content = content.replace("query", "").trim();
+            content = content.substring(1, content.length() - 1);
+        }
+        return content;
     }
 
     public static String getResponseContent(String filename) throws IOException {

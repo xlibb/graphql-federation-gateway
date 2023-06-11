@@ -1,1 +1,3 @@
-isExist(name: \"Hello\")
+query{
+    isExist(name: "Hello")
+}

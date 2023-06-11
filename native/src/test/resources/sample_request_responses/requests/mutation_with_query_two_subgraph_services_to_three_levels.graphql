@@ -1,6 +1,6 @@
 mutation {
     addMission(missionInput: {
-        designation: \"Artemis 2\",
+        designation: "Artemis 2",
         crewIds: [29, 31, 32]
     }){
         id

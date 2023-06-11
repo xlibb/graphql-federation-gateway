@@ -1,4 +1,6 @@
-astronaut(id: 1){
-    id
-    name
+query{
+    astronaut(id: 1){
+        id
+        name
+    }
 }
