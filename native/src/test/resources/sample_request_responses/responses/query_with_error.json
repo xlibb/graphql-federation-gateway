@@ -1,0 +1,17 @@
+{
+  "errors": [
+    {
+      "message": "No crew members",
+      "path": [
+        "mission",
+        "crew"
+      ]
+    }
+  ],
+  "data": {
+    "mission": {
+      "designation": "Apollo4",
+      "crew": null
+    }
+  }
+}

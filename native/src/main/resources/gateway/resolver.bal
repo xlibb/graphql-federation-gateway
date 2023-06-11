@@ -118,9 +118,6 @@ public class Resolver {
                         Resolver resolver = new (self.queryPlan, pointer[i], pointerType, ['record], currentPath, self.errors);
                         resolver.resolve();
                     }
-                } else {
-                    // Ideally should not be thrown
-                    panic error("Error: Cannot resolve the field.");
                 }
             }
         }
@@ -187,7 +184,6 @@ public class Resolver {
                 keyField[key] = (<map<json>>pointer)[key];
                 fields.push(keyField);
             }
-
             return fields;
         }
 
