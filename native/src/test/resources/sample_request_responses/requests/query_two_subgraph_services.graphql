@@ -1,8 +1,10 @@
-mission(id: 1){
-    id
-    designation
-    crew{
+query{
+    mission(id: 1){
         id
-        name
+        designation
+        crew{
+            id
+            name
+        }
     }
 }
