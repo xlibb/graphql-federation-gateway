@@ -87,7 +87,7 @@ test {
 publishing {
     publications {
         maven(MavenPublication) {
-            artifact source: createArtifactZip, extension: 'zip'
+            artifact source: "${projectDir}/target/bin/graphql_federation_gateway.jar" , extension: 'jar'
         }
     }
     repositories {

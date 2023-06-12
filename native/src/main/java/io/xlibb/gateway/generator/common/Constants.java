@@ -16,8 +16,9 @@ public class Constants {
     public static final String QUERY_ARGS_PLACEHOLDER = "@\\{queryArgs}";
     public static final String URL_PLACEHOLDER = "@\\{url}";
     public static final String RESOURCE_FUNCTIONS_PLACEHOLDER = "@\\{resourceFunctions}";
-
     public static final String MATCH_CLIENT_STATEMENTS_PLACEHOLDER = "@\\{matchClientStatements}";
+    public static final String OUTPUT_PATH_PLACEHOLDER = "@\\{outputPath}";
+    public static final String SCHEMA_FILENAME_PLACEHOLDER = "@\\{schemaPath}";
     // Constants for the gateway service generation.
     public static final String CONFIGURABLE_PORT_STATEMENT = "configurable int PORT = 9000;";
     public static final String BALLERINA_GRAPHQL_IMPORT_STATEMENT = "import ballerina/graphql;";
@@ -44,4 +45,9 @@ public class Constants {
     public static final String GATEWAY_PROJECT_TEMPLATE_DIRECTORY = "gateway";
     public static final String GATEWAY_TEMPLATE_FILES_DIRECTORY = "gateway_templates";
 
+    // Error messages
+    public static final String ERROR_INVALID_SUPERGRAPH_FILE_PATH = "Given supergraph file path is invalid";
+    public static final String ERROR_INVALID_OUTPUT_PATH = "Given output path is invalid";
+    public static final String ERROR_OUTPUT_PATH_NOT_WRITABLE = "Given out path is not writable";
+    public static final String ERROR_INVALID_SCHEMA = "Error occurred while parsing the GraphQL schema";
 }

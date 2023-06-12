@@ -19,9 +19,12 @@
 package io.xlibb.gateway.generator;
 
 import graphql.schema.GraphQLSchema;
+import io.ballerina.runtime.api.utils.StringUtils;
+import io.ballerina.runtime.api.values.BString;
 import io.xlibb.gateway.GatewayProject;
 import io.xlibb.gateway.exception.GatewayGenerationException;
 import io.xlibb.gateway.exception.ValidationException;
+import io.xlibb.gateway.generator.common.Constants;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -31,6 +34,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static io.xlibb.gateway.generator.GatewayCodeGenerator.generateGateway;
+
 /**
  * Class to test code generation related to gateway.
  */
@@ -39,26 +44,17 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
             "results"));
 
     @Test(description = "Test query plan generation for gateway", dataProvider =
-            "GatewayQueryPlanGenerationDataProvider")
+            "GatewayGenerationDataProvider")
     public void testQueryPlanGeneration(String supergraphFileName)
             throws ValidationException, IOException, GatewayGenerationException {
-        GraphQLSchema graphQLSchema =  GatewayTestUtils.getGatewayProject(supergraphFileName, tmpDir).getSchema();
+        GraphQLSchema graphQLSchema = GatewayTestUtils.getGatewayProject(supergraphFileName, tmpDir).getSchema();
         String generatedSrc = (new GatewayQueryPlanGenerator(graphQLSchema)).generateSrc();
         String expectedSrc = Files.readString(expectedResources.resolve(
                 Paths.get(supergraphFileName, "query_plan.bal")));
         Assert.assertEquals(generatedSrc, expectedSrc);
     }
 
-    @DataProvider(name = "GatewayQueryPlanGenerationDataProvider")
-    public Object[][] getGatewayQueryPlanGenerationTestData() {
-        return new Object[][] {
-                {"two_entities"},
-                {"two_entities_with_id_type_fields"},
-                {"three_entities"}
-        };
-    }
-
-    @Test(description = "Test service generation for gateway", dataProvider = "serviceGenerationDataProvider")
+    @Test(description = "Test service generation for gateway", dataProvider = "GatewayGenerationDataProvider")
     public void testGatewayServiceGeneration(String supergraphFileName)
             throws ValidationException, IOException, GatewayGenerationException {
 
@@ -69,16 +65,7 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
         Assert.assertEquals(generatedSrc, expectedSrc);
     }
 
-    @DataProvider(name = "serviceGenerationDataProvider")
-    public Object[][] getServiceGenerationDataProvider() {
-        return new Object[][] {
-                {"two_entities"},
-                {"two_entities_with_id_type_fields"},
-                {"three_entities"}
-        };
-    }
-
-    @Test(description = "Test gateway types generation", dataProvider = "GatewayTypeGenerationDataProvider")
+    @Test(description = "Test gateway types generation", dataProvider = "GatewayGenerationDataProvider")
     public void testGatewayTypeGeneration(String supergraphFileName)
             throws IOException, ValidationException, GatewayGenerationException {
         GatewayProject project = GatewayTestUtils.getGatewayProject(supergraphFileName, tmpDir);
@@ -89,12 +76,46 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
         Assert.assertEquals(generatedSrc, expectedSrc);
     }
 
-    @DataProvider(name = "GatewayTypeGenerationDataProvider")
+    @Test(description = "Test generate gateway function", dataProvider = "GatewayGenerationDataProvider")
+    public void testGenerateGatewayFunction(String supergraphFileName) {
+        String schemaPath = GatewayTestUtils.SCHEMA_RESOURCE_DIR.resolve(supergraphFileName + ".graphql")
+                .toAbsolutePath().toString();
+        BString gatewayFilePath = generateGateway(StringUtils.fromString(schemaPath),
+                StringUtils.fromString(tmpDir.toString()));
+        Assert.assertEquals(gatewayFilePath.getValue(), tmpDir.resolve(supergraphFileName + "-gateway.jar")
+                .toAbsolutePath().toString());
+    }
+
+    @Test(description = "Test generate gateway function with invalid arguments", dataProvider =
+            "InvalidArgumentsDataProvider")
+    public void testGenerateGatewayFunctionWithInvalidArguments(String supergraphFileName, String outputPath,
+                                                                String expected) {
+        String schemaPath = GatewayTestUtils.SCHEMA_RESOURCE_DIR.resolve(supergraphFileName + ".graphql")
+                .toAbsolutePath().toString();
+        BString gatewayFilePath = generateGateway(StringUtils.fromString(schemaPath),
+                StringUtils.fromString(outputPath));
+        Assert.assertEquals(gatewayFilePath.getValue(), expected);
+    }
+
+    @DataProvider(name = "GatewayGenerationDataProvider")
     public Object[][] getGatewayTypeGenerationTestData() {
-        return new Object[][] {
+        return new Object[][]{
                 {"two_entities"},
                 {"two_entities_with_id_type_fields"},
                 {"three_entities"}
         };
     }
+
+    @DataProvider(name = "InvalidArgumentsDataProvider")
+    public Object[][] getInvalidArgumentsTestData() {
+        String tempPath = tmpDir.toAbsolutePath().toString();
+        return new Object[][]{
+                {"invalid_schema_path", tempPath, Constants.ERROR_INVALID_SUPERGRAPH_FILE_PATH},
+                {"two_entities", "invalid_output_path", Constants.ERROR_INVALID_OUTPUT_PATH},
+                {"invalid/missing_directive_definitions", tempPath, Constants.ERROR_INVALID_SCHEMA},
+                {"invalid/missing_query_type", tempPath, Constants.ERROR_INVALID_SCHEMA}
+        };
+    }
+
+
 }

@@ -5,8 +5,8 @@ configurable string supergraphPath = "";
 configurable string outputPath = "";
 
 public function main() {
-    string gatewayCode = generateGateway(supergraphPath, outputPath);
-    io:println(gatewayCode);
+    string gatewayFilePath = generateGateway(supergraphPath, outputPath);
+    io:println(gatewayFilePath);
 }
 
 isolated function generateGateway(string supergraphPath, string outputPath) returns string = @java:Method {
