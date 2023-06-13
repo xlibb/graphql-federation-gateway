@@ -179,8 +179,17 @@ task checkBallerinaVersion(type: Exec) {
     }
 }
 
+def disabledGroups = ""
+
+task initializeVariables {
+    if (project.hasProperty("disable")) {
+        disabledGroups = project.findProperty("disable")
+    }
+}
+
 test {
     dependsOn {
+        initializeVariables
         getBalHomePath
     }
     doFirst {
@@ -197,6 +206,7 @@ test {
     }
 
     useTestNG {
+        excludeGroups(disabledGroups)
         suites "src/test/resources/testng.xml"
     }
     finalizedBy jacocoTestReport

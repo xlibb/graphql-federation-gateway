@@ -29,6 +29,7 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -117,5 +118,18 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
         };
     }
 
+    @Test(groups = {"invalid_permission"}, description = "Test ouput path is not writable")
+    public void testReadOnlyOutputPath() throws IOException {
+        String supergraph = "two_entities";
+        String schemaPath = GatewayTestUtils.SCHEMA_RESOURCE_DIR.resolve(supergraph + ".graphql")
+                .toAbsolutePath().toString();
+        Path readOnlyPath = tmpDir.toAbsolutePath().resolve("readonly_folder");
+        Files.createDirectory(readOnlyPath);
+        File file = new File(readOnlyPath.toString());
+        file.setReadOnly();
+        BString output = generateGateway(StringUtils.fromString(schemaPath),
+                StringUtils.fromString(readOnlyPath.toString()));
+        Assert.assertEquals(output.getValue(), Constants.ERROR_OUTPUT_PATH_NOT_WRITABLE);
+    }
 
 }
