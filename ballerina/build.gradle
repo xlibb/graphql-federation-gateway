@@ -21,8 +21,8 @@ plugins {
 }
 description = 'Ballerina - GraphQl Federation Gateway'
 
-def packageName = "gateway"
-def packageOrg = "xlibb"
+def packageName = "graphql-federation-gateway"
+def packageOrg = "Ishad-M-I-M"
 def tomlVersion = stripBallerinaExtensionVersion("${project.version}")
 def ballerinaTomlFilePlaceHolder = new File("${project.rootDir}/build-config/resources/Ballerina.toml")
 def ballerinaTomlFile = new File("$project.projectDir/Ballerina.toml")
@@ -110,7 +110,6 @@ clean {
     delete("${projectDir}/target")
 }
 
-ballerinaBuild.dependsOn ":${packageName}-native:build"
-
+ballerinaBuild.dependsOn ":gateway-native:build"
 publishToMavenLocal.dependsOn build
 publish.dependsOn build

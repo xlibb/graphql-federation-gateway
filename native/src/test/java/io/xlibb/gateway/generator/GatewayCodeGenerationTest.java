@@ -82,7 +82,7 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
         String schemaPath = GatewayTestUtils.SCHEMA_RESOURCE_DIR.resolve(supergraphFileName + ".graphql")
                 .toAbsolutePath().toString();
         BString gatewayFilePath = generateGateway(StringUtils.fromString(schemaPath),
-                StringUtils.fromString(tmpDir.toString()));
+                StringUtils.fromString(tmpDir.toString()), StringUtils.fromString("9000"));
         Assert.assertEquals(gatewayFilePath.getValue(), tmpDir.resolve(supergraphFileName + "-gateway.jar")
                 .toAbsolutePath().toString());
     }
@@ -94,7 +94,7 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
         String schemaPath = GatewayTestUtils.SCHEMA_RESOURCE_DIR.resolve(supergraphFileName + ".graphql")
                 .toAbsolutePath().toString();
         BString gatewayFilePath = generateGateway(StringUtils.fromString(schemaPath),
-                StringUtils.fromString(outputPath));
+                StringUtils.fromString(outputPath), StringUtils.fromString("9000"));
         Assert.assertEquals(gatewayFilePath.getValue(), expected);
     }
 
@@ -128,7 +128,7 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
         File file = new File(readOnlyPath.toString());
         file.setReadOnly();
         BString output = generateGateway(StringUtils.fromString(schemaPath),
-                StringUtils.fromString(readOnlyPath.toString()));
+                StringUtils.fromString(readOnlyPath.toString()), StringUtils.fromString("9000"));
         Assert.assertEquals(output.getValue(), Constants.ERROR_OUTPUT_PATH_NOT_WRITABLE);
     }
 

@@ -37,7 +37,7 @@ public class GatewayCodeGenerator {
             "query_field_classifier.bal"
     };
 
-    public static BString generateGateway(BString supergraphPath, BString outPath) {
+    public static BString generateGateway(BString supergraphPath, BString outPath, BString port) {
         try {
             Path path = Paths.get(supergraphPath.getValue());
             Path outputPath = Paths.get(outPath.getValue());
