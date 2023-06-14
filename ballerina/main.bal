@@ -1,12 +1,19 @@
 import ballerina/jballerina.java;
+import ballerina/file;
 import ballerina/io;
 
 configurable string supergraphPath = "";
-configurable string outputPath = "";
-configurable int port = 9090;
+configurable string outputPath = ".";
+configurable int port = 0;
 
-public function main() {
-    string gatewayFilePath = generateGateway(supergraphPath, outputPath, port.toString());
+public function main() returns error? {
+    if supergraphPath == "" || outputPath == "" || port == 0 {
+        io:println("Required parameters are not provided. Please provide supergraphPath, outputPath and port.");
+        return;
+    }
+    string absoluteSupergraphPath = check file:getAbsolutePath(supergraphPath);
+    string absoluteOutputPath = check file:getAbsolutePath(outputPath);
+    string gatewayFilePath = generateGateway(absoluteSupergraphPath, absoluteOutputPath, port.toString());
     io:println(gatewayFilePath);
 }
 

@@ -16,9 +16,7 @@
  */
 
 import org.apache.tools.ant.taskdefs.condition.Os
-plugins {
-    id 'io.ballerina.plugin'
-}
+
 description = 'Ballerina - GraphQl Federation Gateway'
 
 def packageName = "graphql-federation-gateway"
@@ -46,6 +44,12 @@ task updateTomlFiles {
     doLast {
         def newBallerinaToml = ballerinaTomlFilePlaceHolder.text.replace("@project.version@", project.version)
         newBallerinaToml = newBallerinaToml.replace("@toml.version@", tomlVersion)
+        newBallerinaToml = newBallerinaToml.replace("@graphql.java.version@", graphqlJavaVersion)
+        newBallerinaToml = newBallerinaToml.replace("@graphql.java.extended.scalars.version@",
+                graphqlJavaExtendedScalarVersion)
+        newBallerinaToml = newBallerinaToml.replace("@commons.io.version@", commonsIoVersion)
+        newBallerinaToml = newBallerinaToml.replace("@ballerina.lang.version@", ballerinaLangVersion)
+
         ballerinaTomlFile.text = newBallerinaToml
     }
 }
@@ -80,10 +84,6 @@ task ballerinaBuild {
     }
 }
 
-test {
-    enabled = false
-}
-
 publishing {
     publications {
         maven(MavenPublication) {
@@ -102,14 +102,39 @@ publishing {
     }
 }
 
-build {
+configurations {
+    externalJars
+}
+
+dependencies {
+    externalJars "com.graphql-java:graphql-java:${graphqlJavaVersion}"
+    externalJars "com.graphql-java:graphql-java-extended-scalars:${graphqlJavaExtendedScalarVersion}"
+    externalJars "commons-io:commons-io:${commonsIoVersion}"
+    externalJars "org.ballerinalang:formatter-core:${ballerinaLangVersion}"
+    externalJars "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
+    externalJars "org.ballerinalang:ballerina-runtime:${ballerinaLangVersion}"
+    externalJars "org.ballerinalang:ballerina-tools-api:${ballerinaLangVersion}"
+    externalJars "org.ballerinalang:ballerina-parser:${ballerinaLangVersion}"
+}
+
+task copyToLib(type: Copy) {
+    if (project.configurations.find { it.name == "externalJars" }) {
+        into "${projectDir}/lib"
+        from project.configurations.externalJars
+    } else {
+        println "No external jars found"
+    }
+}
+
+task build {
     dependsOn(ballerinaBuild)
 }
 
-clean {
+task clean {
     delete("${projectDir}/target")
 }
 
 ballerinaBuild.dependsOn ":gateway-native:build"
+ballerinaBuild.dependsOn copyToLib
 publishToMavenLocal.dependsOn build
 publish.dependsOn build

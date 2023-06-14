@@ -38,7 +38,6 @@ configurations {
 dependencies {
     checkstyle project(':checkstyle')
     checkstyle "com.puppycrawl.tools:checkstyle:${checkstylePluginVersion}"
-
     implementation "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
     implementation "org.ballerinalang:ballerina-runtime:${ballerinaLangVersion}"
     implementation "org.ballerinalang:ballerina-tools-api:${ballerinaLangVersion}"
@@ -130,7 +129,7 @@ task getBalHomePath {
         extractBallerinaDist
     }
     doLast {
-        if (checkBallerinaVersion.shouldDownload){
+        if (checkBallerinaVersion.shouldDownload) {
             getBalHomePath.ext.balHomePath =
                     "${project.rootDir}/build/ballerina-${ballerinaLangVersion}-swan-lake/distributions/ballerina-${ballerinaLangVersion}"
         } else {
@@ -171,7 +170,8 @@ task checkBallerinaVersion(type: Exec) {
         String output = standardOutput.toString().trim()
         println "Ballerina distribution check result: $output"
         standardOutput = System.out
-        if (executionResult.get().exitValue != 0 || !output.contains(ballerinaLangVersion)) {
+        if (executionResult.get().exitValue != 0 || !output.contains(ballerinaLangVersion)
+                || System.getenv("BALLERINA_HOME") == null) {
             checkBallerinaVersion.ext.shouldDownload = true
         } else {
             checkBallerinaVersion.ext.shouldDownload = false
