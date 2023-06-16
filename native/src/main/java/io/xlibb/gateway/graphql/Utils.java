@@ -10,6 +10,7 @@ import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
 import graphql.schema.idl.errors.SchemaProblem;
 import io.xlibb.gateway.exception.ValidationException;
+import io.xlibb.gateway.generator.common.Constants;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,7 +73,7 @@ public class Utils {
             return new SchemaGenerator().makeExecutableSchema(typeRegistry,
                     RuntimeWiring.newRuntimeWiring().scalar(joinFieldSet).scalar(linkImport).build());
         } catch (SchemaProblem e) {
-            throw new ValidationException("Error occurred while parsing the GraphQL schema");
+            throw new ValidationException(Constants.ERROR_INVALID_SCHEMA);
         }
     }
 

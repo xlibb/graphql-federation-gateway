@@ -38,6 +38,7 @@ public class GatewayProject {
     private final Path tempDir;
     private final Path outputPath;
     private final GraphQLSchema schema;
+    private int port = 9000;
 
     public GatewayProject(String name, String schemaPath, String outputPath) throws IOException, ValidationException {
         this.name = name;
@@ -53,6 +54,12 @@ public class GatewayProject {
                 LOGGER.error("Unable to delete the temporary directory : " + tempDir, ex);
             }
         }));
+    }
+
+    public GatewayProject(String name, String schemaPath, String outputPath, int port) throws ValidationException,
+            IOException {
+        this(name, schemaPath, outputPath);
+        this.port = port;
     }
 
     public GatewayProject(String name, Path schemaPath, Path outputPath) throws IOException, ValidationException {
@@ -85,5 +92,9 @@ public class GatewayProject {
 
     public GraphQLSchema getSchema() {
         return schema;
+    }
+
+    public int getPort() {
+        return port;
     }
 }

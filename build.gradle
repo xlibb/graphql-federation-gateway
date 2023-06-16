@@ -59,6 +59,7 @@ def moduleVersion = project.version.replace("-SNAPSHOT", "")
 
 task build {
     dependsOn(':gateway-native:build')
+    dependsOn(':gateway-ballerina:build')
 }
 
 release {

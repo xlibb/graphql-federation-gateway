@@ -45,7 +45,7 @@ public class GatewayTestUtils {
             Path.of("src", "test", "resources", "sample_request_responses", "requests").toAbsolutePath();
     private static final Path sampleResponseResourceDir =
             Path.of("src", "test", "resources", "sample_request_responses", "responses").toAbsolutePath();
-    private static final Path schemaResourceDir =
+    public static final Path SCHEMA_RESOURCE_DIR =
             Path.of("src", "test", "resources", "supergraph_schemas").toAbsolutePath();
 
     public static File getBallerinaExecutableJar(Path projectDir, Path tmpDir)
@@ -147,7 +147,7 @@ public class GatewayTestUtils {
     public static GatewayProject getGatewayProject(String schemaFileName, Path tmpDir)
             throws IOException, ValidationException {
         GatewayProject project = new GatewayProject("test",
-                schemaResourceDir.resolve(schemaFileName + ".graphql").toString(), tmpDir.toString());
+                SCHEMA_RESOURCE_DIR.resolve(schemaFileName + ".graphql").toString(), tmpDir.toString());
         return project;
     }
 

@@ -66,6 +66,7 @@ import static io.xlibb.gateway.generator.common.Constants.GET_CLIENT_FUNCTION_TE
 import static io.xlibb.gateway.generator.common.Constants.GRAPHQL_CLIENT_DECLARATION_STATEMENT;
 import static io.xlibb.gateway.generator.common.Constants.MATCH_CLIENT_STATEMENTS_PLACEHOLDER;
 import static io.xlibb.gateway.generator.common.Constants.MATCH_CLIENT_STATEMENT_TEMPLATE;
+import static io.xlibb.gateway.generator.common.Constants.PORT_PLACEHOLDER;
 import static io.xlibb.gateway.generator.common.Constants.QUERY_ARGS_PLACEHOLDER;
 import static io.xlibb.gateway.generator.common.Constants.QUERY_PLACEHOLDER;
 import static io.xlibb.gateway.generator.common.Constants.REMOTE_FUNCTION_TEMPLATE_FILE;
@@ -111,7 +112,8 @@ public class GatewayServiceGenerator {
 
         List<ModuleMemberDeclarationNode> nodes = new ArrayList<>(getClientDeclarations());
         nodes.add(getGetClientFunction());
-        nodes.add(NodeParser.parseModuleMemberDeclaration(CONFIGURABLE_PORT_STATEMENT));
+        nodes.add(NodeParser.parseModuleMemberDeclaration(CONFIGURABLE_PORT_STATEMENT
+                .replace(PORT_PLACEHOLDER, String.valueOf(project.getPort()))));
         nodes.add(getServiceDeclaration());
 
         NodeList<ModuleMemberDeclarationNode> members = createNodeList(

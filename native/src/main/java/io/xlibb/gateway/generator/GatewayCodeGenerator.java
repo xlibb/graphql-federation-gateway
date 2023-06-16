@@ -1,10 +1,13 @@
 package io.xlibb.gateway.generator;
 
 import graphql.schema.GraphQLSchema;
+import io.ballerina.runtime.api.utils.StringUtils;
+import io.ballerina.runtime.api.values.BString;
 import io.xlibb.gateway.GatewayProject;
 import io.xlibb.gateway.exception.GatewayGenerationException;
 import io.xlibb.gateway.exception.ValidationException;
 import io.xlibb.gateway.generator.common.CommonUtils;
+import io.xlibb.gateway.generator.common.Constants;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -13,7 +16,9 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static io.xlibb.gateway.generator.common.Constants.GATEWAY_PROJECT_TEMPLATE_DIRECTORY;
 import static io.xlibb.gateway.generator.common.Constants.QUERY_PLAN_FILE_NAME;
@@ -31,6 +36,32 @@ public class GatewayCodeGenerator {
             "records.bal",
             "query_field_classifier.bal"
     };
+
+    public static BString generateGateway(BString supergraphPath, BString outPath, BString port) {
+        try {
+            Path path = Paths.get(supergraphPath.getValue());
+            Path outputPath = Paths.get(outPath.getValue());
+            File outputDest = new File(outputPath.toString());
+            Path fileName = path.getFileName();
+            if (fileName == null) {
+                return StringUtils.fromString(Constants.ERROR_INVALID_SUPERGRAPH_FILE_PATH);
+            }
+            if (!outputDest.exists()) {
+                return StringUtils.fromString(Constants.ERROR_INVALID_OUTPUT_PATH);
+            }
+            if (!outputDest.canWrite()) {
+                return StringUtils.fromString(Constants.ERROR_OUTPUT_PATH_NOT_WRITABLE);
+            }
+            GatewayProject project = new GatewayProject(fileName.toString().replace(".graphql", ""),
+                    path.toString(), outputPath.toString(), Integer.parseInt(port.getValue()));
+            File file = generateGatewayJar(project);
+            return StringUtils.fromString(file.getAbsolutePath());
+        } catch (NoSuchFileException e) {
+            return StringUtils.fromString(Constants.ERROR_INVALID_SUPERGRAPH_FILE_PATH);
+        } catch (GatewayGenerationException | IOException | ValidationException e) {
+            return StringUtils.fromString(e.getMessage());
+        }
+    }
 
     public static File generateGatewayJar(GatewayProject project) throws GatewayGenerationException {
         try {

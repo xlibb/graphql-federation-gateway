@@ -21,6 +21,7 @@ module io.xlibb.gateway {
     requires com.graphqljava.extendedscalars;
     requires java.net.http;
     requires io.ballerina.tools.api;
+    requires io.ballerina.runtime;
     requires org.apache.commons.io;
     requires io.ballerina.formatter.core;
     requires org.slf4j;
