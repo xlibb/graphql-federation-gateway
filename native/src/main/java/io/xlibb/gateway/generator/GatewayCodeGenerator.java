@@ -53,7 +53,7 @@ public class GatewayCodeGenerator {
                 return StringUtils.fromString(Constants.ERROR_OUTPUT_PATH_NOT_WRITABLE);
             }
             GatewayProject project = new GatewayProject(fileName.toString().replace(".graphql", ""),
-                    path.toString(), outputPath.toString());
+                    path.toString(), outputPath.toString(), Integer.parseInt(port.getValue()));
             File file = generateGatewayJar(project);
             return StringUtils.fromString(file.getAbsolutePath());
         } catch (NoSuchFileException e) {
