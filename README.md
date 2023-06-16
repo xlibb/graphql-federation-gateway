@@ -20,7 +20,7 @@ This will generate a gateway executable for a given supergraph schema.
 
 2. Download and install [Ballerina](https://ballerina.io/downloads/)
 
-### Steps to using the gateway.
+### Steps to use the gateway.
 1. Download the `graphql_federation_gateway.jar` from the release files. 
 
 2. Run the following command
