@@ -20,7 +20,7 @@ This will generate a gateway executable for a given supergraph schema.
 
 2. Download and install [Ballerina](https://ballerina.io/downloads/)
 
-### Steps to using the gateway.
+### Steps to use the gateway.
 1. Download the `graphql_federation_gateway.jar` from the release files. 
 
 2. Run the following command
@@ -33,6 +33,15 @@ java -jar -D"ballerina.home=<ballerina-installation-path>/distributions/ballerin
 ```bash
 java -jar <executable-file>
 ```
+
+### Try out the example
+1. Download the `graphql_federation_gateway.jar` from the latest release.
+2. In `examples/astronauts_missions_example` directory there's two federated graphql services and a supergraph schema.
+3. In terminal execute `bal run` inside both `astronauts_service` and `missions_service` directories to start the subgraph services.
+4. Run the above given command to generate the gateway executable by providing the `supergraph.graphql` as the argument for the supergraphPath and optionally providing the port and the output path.
+5. Run the generated gateway executable `jar` with `java -jar <generated-executable-file>`.
+
+>**Note:** Postman or any other  graphql client program can be used to send query requests.
 
 ## Build from the source.
 

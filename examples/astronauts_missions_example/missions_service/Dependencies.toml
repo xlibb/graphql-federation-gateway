@@ -5,7 +5,7 @@
 
 [ballerina]
 dependencies-toml-version = "2"
-distribution-version = "2201.5.0"
+distribution-version = "2201.6.0"
 
 [[package]]
 org = "ballerina"
@@ -61,7 +61,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "graphql"
-version = "1.8.0"
+version = "1.8.1"
 dependencies = [
 	{org = "ballerina", name = "auth"},
 	{org = "ballerina", name = "file"},
@@ -311,13 +311,13 @@ dependencies = [
 ]
 
 [[package]]
-org = "graphql_tool_test"
-name = "astronaut_service"
+org = "federation_gateway_test"
+name = "missions_service"
 version = "0.1.0"
 dependencies = [
 	{org = "ballerina", name = "graphql"}
 ]
 modules = [
-	{org = "graphql_tool_test", packageName = "astronaut_service", moduleName = "astronaut_service"}
+	{org = "federation_gateway_test", packageName = "missions_service", moduleName = "missions_service"}
 ]
 
