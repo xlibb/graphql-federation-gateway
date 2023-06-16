@@ -4,11 +4,11 @@ import ballerina/io;
 
 configurable string supergraphPath = "";
 configurable string outputPath = ".";
-configurable int port = 0;
+configurable int port = 9000;
 
 public function main() returns error? {
-    if supergraphPath == "" || outputPath == "" || port == 0 {
-        io:println("Required parameters are not provided. Please provide supergraphPath, outputPath and port.");
+    if supergraphPath == ""  {
+        io:println("Required parameters are not provided. Please provide supergraphPath");
         return;
     }
     string absoluteSupergraphPath = check file:getAbsolutePath(supergraphPath);
