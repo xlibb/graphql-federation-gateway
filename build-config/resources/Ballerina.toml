@@ -7,7 +7,7 @@ export=["graphql_federation_gateway"]
 keywords = ["graphql", "federation", "gateway"]
 repository = "https://github.com/xlibb/graphql-federation-gateway"
 license = ["Apache-2.0"]
-distribution = "2201.6.0"
+distribution = "@ballerina.lang.version@"
 
 [[platform.java11.dependency]]
 groupId = "io.xlibb.gateway"
@@ -28,7 +28,7 @@ version = "@graphql.java.extended.scalars.version@"
 path="./lib/graphql-java-extended-scalars-@graphql.java.extended.scalars.version@.jar"
 
 [[platform.java11.dependency]]
-groupId = "org.apache.commons"
+groupId = "commons-io"
 artifactId = "commons-io"
 version = "@commons.io.version@"
 path="./lib/commons-io-@commons.io.version@.jar"
@@ -64,34 +64,61 @@ version = "@ballerina.lang.version@"
 path="./lib/ballerina-tools-api-@ballerina.lang.version@.jar"
 
 [[platform.java11.dependency]]
-groupId = "com.github.zafarkhaja"
-artifactId = "java-semver"
-version = "0.9.0"
-path="./lib/java-semver-0.9.0.jar"
-
-[[platform.java11.dependency]]
 groupId = "org.ballerinalang"
 artifactId = "central-client"
 version = "@ballerina.lang.version@"
 path="./lib/central-client-@ballerina.lang.version@.jar"
 
 [[platform.java11.dependency]]
+groupId = "org.ballerinalang"
+artifactId = "maven-resolver"
+version = "@ballerina.lang.version@"
+path="./lib/maven-resolver-@ballerina.lang.version@.jar"
+
+[[platform.java11.dependency]]
+groupId = "com.github.zafarkhaja"
+artifactId = "java-semver"
+version = "@java.semver.version@"
+path="./lib/java-semver-@java.semver.version@.jar"
+
+[[platform.java11.dependency]]
 groupId = "org.apache.commons"
 artifactId = "commons-compress"
-version = "1.21"
-path="./lib/commons-compress-1.21.jar"
+version = "@commons.compress.version@"
+path="./lib/commons-compress-@commons.compress.version@.jar"
 
 [[platform.java11.dependency]]
-path="./lib/okhttp-3.14.0.jar"
+groupId = "com.squareup.okhttp3"
+artifactId = "okhttp"
+version = "@okhttp.version@"
+path="./lib/okhttp-@okhttp.version@.jar"
 
 [[platform.java11.dependency]]
-path="./lib/okio-2.2.2.jar"
+groupId = "com.squareup.okio"
+artifactId = "okio"
+version = "@okio.version@"
+path="./lib/okio-@okio.version@.jar"
 
 [[platform.java11.dependency]]
-path="./lib/kotlin-stdlib-1.2.60.jar"
+groupId = "org.jetbrains.kotlin"
+artifactId = "kotlin-stdlib"
+version = "@kotlin.version@"
+path="./lib/kotlin-stdlib-@kotlin.version@.jar"
 
 [[platform.java11.dependency]]
-path="./lib/asm-7.2.jar"
+groupId = "org.ow2.asm"
+artifactId = "asm"
+version = "@asm.version@"
+path="./lib/asm-@asm.version@.jar"
 
 [[platform.java11.dependency]]
-path="./lib/maven-resolver-@ballerina.lang.version@.jar"
+groupId = "io.netty"
+artifactId = "netty-common"
+version = "@netty.version@"
+path="./lib/netty-common-@netty.version@.jar"
+
+[[platform.java11.dependency]]
+groupId = "io.netty"
+artifactId = "netty-buffer"
+version = "@netty.version@"
+path="./lib/netty-buffer-@netty.version@.jar"
