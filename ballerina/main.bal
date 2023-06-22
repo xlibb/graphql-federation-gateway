@@ -14,7 +14,7 @@ public function main() returns error? {
     string absoluteSupergraphPath = check file:getAbsolutePath(supergraphPath);
     string absoluteOutputPath = check file:getAbsolutePath(outputPath);
     string gatewayFilePath = generateGateway(absoluteSupergraphPath, absoluteOutputPath, port.toString());
-    io:println(gatewayFilePath);
+    io:println("\n", "Gateway Generated at: ", gatewayFilePath);
 }
 
 isolated function generateGateway(string supergraphPath, string outputPath, string port) returns string = @java:Method {
