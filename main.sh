@@ -11,7 +11,7 @@ if ! command -v bal &>/dev/null; then
   exit 1
 fi
 
-jar_file="./ballerina/target/bin/graphql_federation_gateway.jar"
+jar_file=".graphql_federation_gateway.jar"
 jar_url="https://github.com/Ishad-M-I-M/graphql-federation-gateway/releases/download/v0.1.0/graphql_federation_gateway.jar"
 
 if [[ ! -f $jar_file ]]; then
