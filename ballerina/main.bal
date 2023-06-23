@@ -7,14 +7,19 @@ configurable string outputPath = ".";
 configurable int port = 9000;
 
 public function main() returns error? {
-    if supergraphPath == ""  {
-        io:println("Required parameters are not provided. Please provide supergraphPath");
+    if supergraphPath == "" {
+        io:println("\nRequired parameters are not provided. Please provide supergraphPath\n");
         return;
     }
     string absoluteSupergraphPath = check file:getAbsolutePath(supergraphPath);
     string absoluteOutputPath = check file:getAbsolutePath(outputPath);
-    string gatewayFilePath = generateGateway(absoluteSupergraphPath, absoluteOutputPath, port.toString());
-    io:println("\n", "Gateway Generated at: ", gatewayFilePath);
+    string result = generateGateway(absoluteSupergraphPath, absoluteOutputPath, port.toString());
+    boolean|error checkResult = file:test(result, file:EXISTS);
+    if checkResult is boolean && checkResult {
+        io:println("\nGateway Generated at: ", result, "\n");
+    } else {
+        io:print("\nError: ", result, "\n");
+    }
 }
 
 isolated function generateGateway(string supergraphPath, string outputPath, string port) returns string = @java:Method {

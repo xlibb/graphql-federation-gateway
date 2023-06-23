@@ -11,7 +11,7 @@ if ! command -v bal &>/dev/null; then
   exit 1
 fi
 
-jar_file=".graphql_federation_gateway.jar"
+jar_file="./graphql_federation_gateway.jar"
 jar_url="https://github.com/Ishad-M-I-M/graphql-federation-gateway/releases/download/v0.1.0/graphql_federation_gateway.jar"
 
 if [[ ! -f $jar_file ]]; then
@@ -60,9 +60,6 @@ i=0
 # Display animation while the last command is running
 while kill -0 $pid 2>/dev/null; do
   i=$(( (i+1) % 4 ))
-  printf "\r${spin:$i:1} Generating gateway..."
+  printf "\r%s Generating gateway..." "${spin:$i:1}"
   sleep 0.1
 done
-
-# Clear the animation line
-printf "\r\033[K"
