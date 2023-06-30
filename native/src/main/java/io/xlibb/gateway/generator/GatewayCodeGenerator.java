@@ -72,12 +72,28 @@ public class GatewayCodeGenerator {
             }
             GatewayProject project = new GatewayProject(fileName.toString().replace(".graphql", ""),
                     path.toString(), outputPath.toString(), Integer.parseInt(port.getValue()));
-            File file = generateGatewayJar(project);
-            return StringUtils.fromString(file.getAbsolutePath());
+            generateGatewayProject(project);
+            return StringUtils.fromString("success");
         } catch (NoSuchFileException e) {
             return StringUtils.fromString(Constants.ERROR_INVALID_SUPERGRAPH_FILE_PATH);
         } catch (GatewayGenerationException | IOException | ValidationException e) {
             return StringUtils.fromString(e.getMessage());
+        }
+    }
+
+    public static void generateGatewayProject(GatewayProject project) throws GatewayGenerationException {
+        try {
+            copyTemplateFiles(project.getOutputPath());
+            generateBalSources(project, project.getOutputPath());
+
+            // Delete partial files
+            try {
+                deletePartialFiles(project.getTempDir());
+            } catch (IOException ignored) {
+
+            }
+        } catch (GatewayGenerationException | IOException | ValidationException e) {
+            throw new GatewayGenerationException(e.getMessage());
         }
     }
 
@@ -95,8 +111,10 @@ public class GatewayCodeGenerator {
             //Generating the executable
             CommonUtils.getCompiledBallerinaProject(project.getTempDir(),
                     project.getOutputPath(), project.getName() + "-gateway");
-        } catch (GatewayGenerationException | IOException | ValidationException e) {
+        } catch (GatewayGenerationException | IOException e) {
             throw new GatewayGenerationException(e.getMessage());
+        } catch (ValidationException e) {
+            throw new RuntimeException(e);
         }
         return new File(project.getOutputPath().toString() + "/" + project.getName() + "-gateway.jar");
     }
@@ -141,6 +159,15 @@ public class GatewayCodeGenerator {
                 project.getTempDir());
         writeSourceToFile(new GatewayServiceGenerator(project).generateSrc(), SERVICE_FILE_NAME,
                 project.getTempDir());
+    }
+
+    private static void generateBalSources(GatewayProject project, Path outputPath)
+            throws GatewayGenerationException, IOException, ValidationException {
+        GraphQLSchema graphQLSchema = project.getSchema();
+
+        writeSourceToFile(new GatewayTypeGenerator(graphQLSchema).generateSrc(), TYPES_FILE_NAME, outputPath);
+        writeSourceToFile(new GatewayQueryPlanGenerator(graphQLSchema).generateSrc(), QUERY_PLAN_FILE_NAME, outputPath);
+        writeSourceToFile(new GatewayServiceGenerator(project).generateSrc(), SERVICE_FILE_NAME, outputPath);
     }
 
     private static void writeSourceToFile(String content, String filename, Path targetPath) throws IOException {
