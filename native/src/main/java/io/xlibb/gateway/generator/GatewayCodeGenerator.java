@@ -85,13 +85,8 @@ public class GatewayCodeGenerator {
         try {
             copyTemplateFiles(project.getOutputPath());
             generateBalSources(project, project.getOutputPath());
+            deletePartialFiles(project.getTempDir());
 
-            // Delete partial files
-            try {
-                deletePartialFiles(project.getTempDir());
-            } catch (IOException ignored) {
-
-            }
         } catch (GatewayGenerationException | IOException | ValidationException e) {
             throw new GatewayGenerationException(e.getMessage());
         }
@@ -101,13 +96,8 @@ public class GatewayCodeGenerator {
         try {
             copyTemplateFiles(project.getTempDir());
             generateBalSources(project);
+            deletePartialFiles(project.getTempDir());
 
-            // Delete partial files
-            try {
-                deletePartialFiles(project.getTempDir());
-            } catch (IOException ignored) {
-
-            }
             //Generating the executable
             CommonUtils.getCompiledBallerinaProject(project.getTempDir(),
                     project.getOutputPath(), project.getName() + "-gateway");
@@ -142,11 +132,13 @@ public class GatewayCodeGenerator {
         }
     }
 
-    private static void deletePartialFiles(Path directoryPath) throws IOException {
-        for (Path path : Files.walk(directoryPath)
-                .filter(path -> path.toString().endsWith(".partial")).toArray(Path[]::new)) {
-            Files.delete(path);
-        }
+    private static void deletePartialFiles(Path directoryPath) {
+        try {
+            for (Path path : Files.walk(directoryPath)
+                    .filter(path -> path.toString().endsWith(".partial")).toArray(Path[]::new)) {
+                Files.delete(path);
+            }
+        } catch (IOException ignore) { }
     }
 
     private static void generateBalSources(GatewayProject project)

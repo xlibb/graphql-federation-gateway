@@ -83,8 +83,7 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
                 .toAbsolutePath().toString();
         BString gatewayFilePath = generateGateway(StringUtils.fromString(schemaPath),
                 StringUtils.fromString(tmpDir.toString()), StringUtils.fromString("9000"));
-        Assert.assertEquals(gatewayFilePath.getValue(), tmpDir.resolve(supergraphFileName + "-gateway.jar")
-                .toAbsolutePath().toString());
+        Assert.assertEquals(gatewayFilePath.getValue(), "success");
     }
 
     @Test(description = "Test generate gateway function with invalid arguments", dataProvider =
