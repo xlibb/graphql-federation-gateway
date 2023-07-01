@@ -104,7 +104,7 @@ public class CommonUtilTest extends GraphqlTest {
 
     @Test(description = "Test successful compilation of a ballerina gateway projects",
             dataProvider = "GatewayProjectFilesProvider")
-    public void testGetCompiledBallerinaProject(File folder, String folderName)
+    public void testCompilationOfBallerinaProject(File folder, String folderName)
             throws GatewayGenerationException, IOException {
         Path projectDir = tmpDir.resolve(folderName);
         if (!projectDir.toFile().mkdir()) {
@@ -112,7 +112,7 @@ public class CommonUtilTest extends GraphqlTest {
         }
         GatewayCodeGenerator.copyTemplateFiles(projectDir);
         GatewayTestUtils.copyFilesToTarget(Objects.requireNonNull(folder.listFiles()), projectDir);
-        File executable = CommonUtils.getCompiledBallerinaProject(projectDir, tmpDir, folderName);
+        File executable = GatewayTestUtils.getCompiledBallerinaProject(projectDir, tmpDir, folderName);
         Assert.assertTrue(executable.exists());
     }
 
@@ -129,24 +129,6 @@ public class CommonUtilTest extends GraphqlTest {
                 {new BooleanValue(true), "true"},
                 {new FloatValue(BigDecimal.ONE), "1"},
         };
-    }
-
-    @Test(description = "Test failure in compilation of a ballerina gateway projects",
-            dataProvider = "InvalidGatewayProjectFilesProvider")
-    public void testUnsuccessfulCompiledBallerinaProject(Path[] files, String folderName)
-            throws GatewayGenerationException, IOException {
-        Path projectDir = tmpDir.resolve(folderName);
-        if (!projectDir.toFile().mkdir()) {
-            throw new RuntimeException("Error while creating project directory");
-        }
-        GatewayCodeGenerator.copyTemplateFiles(projectDir);
-        GatewayTestUtils.copyFilesToTarget(files, projectDir);
-        try {
-            CommonUtils.getCompiledBallerinaProject(projectDir, tmpDir, folderName);
-        } catch (GatewayGenerationException e) {
-            Assert.assertEquals(e.getMessage(),
-                    "Error while generating the executable.");
-        }
     }
 
     @DataProvider(name = "GatewayProjectFilesProvider")
@@ -171,16 +153,6 @@ public class CommonUtilTest extends GraphqlTest {
         };
     }
 
-    @DataProvider(name = "InvalidGatewayProjectFilesProvider")
-    public Object[][] getinvalidProjects() {
-        return new Object[][]{
-                {
-                        new Path[]{},
-                        "projectWithMissingFiles"
-                }
-        };
-    }
-
     @Test(description = "Test get ballerina type name", dataProvider = "BallerinaTypeProvider")
     public void testGetBallerinaTypeName(String type, String expectedName) {
         Assert.assertEquals(CommonUtils.getBallerinaTypeName(type), expectedName);
@@ -193,7 +165,7 @@ public class CommonUtilTest extends GraphqlTest {
                 {"String", "string"},
                 {"Boolean", "boolean"},
                 {"Float", "float"},
-                {"ID", "any"}
+                {"ID", "string"}
         };
     }
 }

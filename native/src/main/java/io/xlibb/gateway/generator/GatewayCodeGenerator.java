@@ -24,7 +24,6 @@ import io.ballerina.runtime.api.values.BString;
 import io.xlibb.gateway.GatewayProject;
 import io.xlibb.gateway.exception.GatewayGenerationException;
 import io.xlibb.gateway.exception.ValidationException;
-import io.xlibb.gateway.generator.common.CommonUtils;
 import io.xlibb.gateway.generator.common.Constants;
 import org.apache.commons.io.IOUtils;
 
@@ -72,8 +71,8 @@ public class GatewayCodeGenerator {
             }
             GatewayProject project = new GatewayProject(fileName.toString().replace(".graphql", ""),
                     path.toString(), outputPath.toString(), Integer.parseInt(port.getValue()));
-            File file = generateGatewayJar(project);
-            return StringUtils.fromString(file.getAbsolutePath());
+            generateGatewayProject(project);
+            return StringUtils.fromString("success");
         } catch (NoSuchFileException e) {
             return StringUtils.fromString(Constants.ERROR_INVALID_SUPERGRAPH_FILE_PATH);
         } catch (GatewayGenerationException | IOException | ValidationException e) {
@@ -81,24 +80,14 @@ public class GatewayCodeGenerator {
         }
     }
 
-    public static File generateGatewayJar(GatewayProject project) throws GatewayGenerationException {
+    public static void generateGatewayProject(GatewayProject project) throws GatewayGenerationException {
         try {
-            copyTemplateFiles(project.getTempDir());
-            generateBalSources(project);
-
-            // Delete partial files
-            try {
-                deletePartialFiles(project.getTempDir());
-            } catch (IOException ignored) {
-
-            }
-            //Generating the executable
-            CommonUtils.getCompiledBallerinaProject(project.getTempDir(),
-                    project.getOutputPath(), project.getName() + "-gateway");
+            copyTemplateFiles(project.getOutputPath());
+            generateBalSources(project, project.getOutputPath());
+            deletePartialFiles(project.getOutputPath());
         } catch (GatewayGenerationException | IOException | ValidationException e) {
             throw new GatewayGenerationException(e.getMessage());
         }
-        return new File(project.getOutputPath().toString() + "/" + project.getName() + "-gateway.jar");
     }
 
     public static void copyTemplateFiles(Path targetPath) throws GatewayGenerationException, IOException {
@@ -124,23 +113,22 @@ public class GatewayCodeGenerator {
         }
     }
 
-    private static void deletePartialFiles(Path directoryPath) throws IOException {
-        for (Path path : Files.walk(directoryPath)
-                .filter(path -> path.toString().endsWith(".partial")).toArray(Path[]::new)) {
-            Files.delete(path);
-        }
+    private static void deletePartialFiles(Path directoryPath) {
+        try {
+            for (Path path : Files.walk(directoryPath)
+                    .filter(path -> path.toString().endsWith(".partial")).toArray(Path[]::new)) {
+                Files.delete(path);
+            }
+        } catch (IOException ignore) { }
     }
 
-    private static void generateBalSources(GatewayProject project)
+    private static void generateBalSources(GatewayProject project, Path outputPath)
             throws GatewayGenerationException, IOException, ValidationException {
         GraphQLSchema graphQLSchema = project.getSchema();
 
-        writeSourceToFile(new GatewayTypeGenerator(graphQLSchema).generateSrc(), TYPES_FILE_NAME,
-                project.getTempDir());
-        writeSourceToFile(new GatewayQueryPlanGenerator(graphQLSchema).generateSrc(), QUERY_PLAN_FILE_NAME,
-                project.getTempDir());
-        writeSourceToFile(new GatewayServiceGenerator(project).generateSrc(), SERVICE_FILE_NAME,
-                project.getTempDir());
+        writeSourceToFile(new GatewayTypeGenerator(graphQLSchema).generateSrc(), TYPES_FILE_NAME, outputPath);
+        writeSourceToFile(new GatewayQueryPlanGenerator(graphQLSchema).generateSrc(), QUERY_PLAN_FILE_NAME, outputPath);
+        writeSourceToFile(new GatewayServiceGenerator(project).generateSrc(), SERVICE_FILE_NAME, outputPath);
     }
 
     private static void writeSourceToFile(String content, String filename, Path targetPath) throws IOException {

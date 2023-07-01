@@ -23,31 +23,20 @@ This will generate a gateway executable for a given supergraph schema.
 ### Steps to use the gateway.
 1. Download [gateway.sh](https://github.com/Ishad-M-I-M/graphql-federation-gateway/releases/download/v0.1.0/gateway.sh)
 
-2. To generate the gateway executable run the following command in the terminal.
+2. To start the gateway run the following command in the terminal.
 
 ```bash
-./gateway.sh -s <supergraphPath> -p <port> -o <outputPath>
+./gateway.sh -s <supergraphPath> -p <port>
 ```
 >**Note:**\
 > `supergraphPath` is a mandatory argument. \
-> If the port is not provided the default port 9090 will be used. \
-> If the output path is not provided the gateway executable will be generated in the current directory. 
-3. Run the generated gateway executable `jar` with
-
-```bash
-bal run <executable-file>
-```
-or
-```bash
-java -jar <executable-file>
-```
+> If the port is not provided the default port 9090 will be used.
 
 ### Try out the example
 1. Navigate into `examples/astronauts_missions_example` directory. There's two federated graphql services and a supergraph schema.
-2. In terminal execute `./gateway.sh -s supergraph.graphql` to generate the gateway executable. It'll generate the executable named as `supergraph-gateway.jar` in the current directory.
+2. In terminal execute `./gateway.sh -s supergraph.graphql` to start the gateway.
 3. In terminal execute `bal run` inside both `astronauts_service` and `missions_service` directories to start the subgraph services.
-4. Run the generated gateway executable with `bal run supergraph-gateway.jar`.
-5. Try out the following query in the graphql client.
+4. Try out the following query in the graphql client.
 
 ```graphql
 query {
@@ -62,8 +51,6 @@ query {
 }
 ```
 
->**Note:** Postman or any other  graphql client program can be used to send query requests.
-
 ## Build from the source.
 
 ### Setup the prerequisites
@@ -75,7 +62,7 @@ query {
 
       > **Note:** Set the JAVA_HOME environment variable to the path name of the directory into which you installed JDK.
 
-2.  Export your Github Personal access token with the read package permissions as follows.
+2.  Export your Github personal access token with the read package permissions as follows.
 
           export packageUser=<Username>
           export packagePAT=<Personal access token>

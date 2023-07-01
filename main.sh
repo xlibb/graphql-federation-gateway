@@ -11,7 +11,7 @@ if ! command -v bal &>/dev/null; then
   exit 1
 fi
 
-jar_file="./graphql_federation_gateway.jar"
+jar_file="./ballerina/target/bin/graphql_federation_gateway.jar"
 jar_url="https://github.com/Ishad-M-I-M/graphql-federation-gateway/releases/download/v0.1.0/graphql_federation_gateway.jar"
 
 if [[ ! -f $jar_file ]]; then
@@ -23,10 +23,6 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     -s|--supergraphPath)
       supergraphPath=$2
-      shift 2
-      ;;
-    -o|--outputPath)
-      outputPath=$2
       shift 2
       ;;
     -p|--port)
@@ -42,24 +38,20 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Set default values if arguments are not provided
-outputPath=${outputPath:-.}
+outputPath=$(mktemp -d)
 port=${port:-9090}
 
 # Execute the jar with the provided input values
-(
+result=$(
   bal run "${jar_file}" \
     -CsupergraphPath="${supergraphPath}" \
     -CoutputPath="${outputPath}" \
     -Cport="${port}"
-) &
+)
 
-pid=$!
-spin='-\|/'
-i=0
+if [ -n "$result" ]; then
+  echo $result
+  exit 1
+fi
 
-# Display animation while the last command is running
-while kill -0 $pid 2>/dev/null; do
-  i=$(( (i+1) % 4 ))
-  printf "\r%s Generating gateway..." "${spin:$i:1}"
-  sleep 0.1
-done
+bal run $outputPath

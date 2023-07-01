@@ -14,10 +14,8 @@ public function main() returns error? {
     string absoluteSupergraphPath = check file:getAbsolutePath(supergraphPath);
     string absoluteOutputPath = check file:getAbsolutePath(outputPath);
     string result = generateGateway(absoluteSupergraphPath, absoluteOutputPath, port.toString());
-    boolean|error checkResult = file:test(result, file:EXISTS);
-    if checkResult is boolean && checkResult {
-        io:println("\nGateway Generated at: ", result, "\n");
-    } else {
+
+    if result != "success" {
         io:print("\nError: ", result, "\n");
     }
 }

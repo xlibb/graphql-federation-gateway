@@ -54,9 +54,11 @@ public class GatewayExecutionTest {
     @BeforeClass
     public void setup() throws IOException, GatewayGenerationException, ValidationException {
         this.tmpDir = Files.createTempDirectory("graphql-gateway-" + System.nanoTime());
-        File gatewayExec = GatewayCodeGenerator
-                .generateGatewayJar(new GatewayProject("test", supergraphSdl.toAbsolutePath().toString(),
-                        tmpDir.toAbsolutePath().toString(), 9001));
+        GatewayProject gatewayProject = new GatewayProject("test", supergraphSdl.toAbsolutePath().toString(),
+                tmpDir.toAbsolutePath().toString(), 9001);
+        GatewayCodeGenerator.generateGatewayProject(gatewayProject);
+        File gatewayExec = GatewayTestUtils
+                .getBallerinaExecutableJar(gatewayProject.getOutputPath(), gatewayProject.getTempDir());
         gatewayProcess = new ProcessBuilder("java", "-jar", gatewayExec.getAbsolutePath()).start();
         astronautServiceProcess = new ProcessBuilder("java", "-jar",
                 GatewayTestUtils.getBallerinaExecutableJar(
