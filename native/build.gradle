@@ -111,7 +111,13 @@ task downloadBallerinaDist(type: Download) {
     }
 
     doFirst {
-        println "Ballerina distribution version ${ballerinaLangVersion} not found. Downloading..."
+        println "Ballerina distribution version ${ballerinaLangVersion} not installed."
+        File distribution = new File("${project.rootDir}/ballerina-dist/ballerina-${ballerinaLangVersion}-swan-lake.zip")
+        if (distribution.exists()){
+            println "Using already downloaded distribution"
+        } else {
+            println "Downloading Ballerina distribution version ${ballerinaLangVersion}"
+        }
     }
 
     src "https://dist.ballerina.io/downloads/${ballerinaLangVersion}/ballerina-${ballerinaLangVersion}-swan-lake.zip"

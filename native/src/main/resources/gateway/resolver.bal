@@ -112,8 +112,6 @@ public class Resolver {
                     }
                     return;
                 }
-                // Ideally should not be thrown
-                return error("Error: Cannot compose into the result.");
             }
             else {
                 if pointer is map<json> {
@@ -122,9 +120,6 @@ public class Resolver {
                     } else {
                         return error(element.toString() + " is not found in pointer :" + pointer.toString());
                     }
-                } else {
-                    // Ideally should not be thrown
-                    return error("Error: Cannot compose into the result.");
                 }
             }
             element = pathCopy.shift();
@@ -135,14 +130,8 @@ public class Resolver {
                 pointer[element] = resultToCompose[element];
             } else if resultToCompose is json[] {
                 pointer[element] = (<map<json>>resultToCompose[0])[element];
-            } else {
-                // Ideally should not be thrown
-                return error("Error: Cannot compose into the result.");
             }
 
-        } else {
-            // Ideally should not be thrown
-            return error("Error: Cannot compose into the result.");
         }
     }
 
@@ -167,8 +156,6 @@ public class Resolver {
                 map<json> keyField = {};
                 keyField[key] = (<map<json>>pointer)[key];
                 fields.push(keyField);
-            } else {
-                return error("Error: Cannot get key field from the result.");
             }
 
             return fields;
