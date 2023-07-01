@@ -43,19 +43,12 @@ import graphql.schema.GraphQLScalarType;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.GraphQLSchemaElement;
 import graphql.schema.GraphQLType;
-import io.ballerina.projects.BuildOptions;
-import io.ballerina.projects.DiagnosticResult;
-import io.ballerina.projects.JBallerinaBackend;
-import io.ballerina.projects.JvmTarget;
-import io.ballerina.projects.PackageCompilation;
-import io.ballerina.projects.directory.BuildProject;
 import io.xlibb.gateway.exception.GatewayGenerationException;
 import io.xlibb.gateway.exception.ValidationException;
 import io.xlibb.gateway.graphql.SpecReader;
 import io.xlibb.gateway.graphql.components.JoinGraph;
 import org.apache.commons.io.IOUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -276,34 +269,6 @@ public class CommonUtils {
         return path;
     }
 
-    /**
-     * Returns the compiled executable of given ballerina project.
-     *
-     * @param projectPath    Path to the project
-     * @param targetPath     Path to the target directory
-     * @param executableName Name of the executable
-     * @return Executable file (.jar)
-     */
-    public static File getCompiledBallerinaProject(Path projectPath, Path targetPath, String executableName)
-            throws GatewayGenerationException {
-        BuildOptions buildOptions = BuildOptions.builder().build();
-        BuildProject buildProject = BuildProject.load(projectPath, buildOptions);
-        checkDiagnosticResultsForErrors(buildProject.currentPackage().runCodeGenAndModifyPlugins());
-        PackageCompilation packageCompilation = buildProject.currentPackage().getCompilation();
-        JBallerinaBackend jBallerinaBackend = JBallerinaBackend.from(packageCompilation, JvmTarget.JAVA_11);
-        checkDiagnosticResultsForErrors(jBallerinaBackend.diagnosticResult());
-        Path executablePath = targetPath.resolve(executableName + ".jar");
-        jBallerinaBackend.emit(JBallerinaBackend.OutputType.EXEC, executablePath);
-        return executablePath.toFile();
-    }
-
-    private static void checkDiagnosticResultsForErrors(DiagnosticResult diagnosticResult)
-            throws GatewayGenerationException {
-        if (diagnosticResult.hasErrors()) {
-            throw new GatewayGenerationException("Error while generating the executable.");
-        }
-    }
-
     public static String getValue(Value<?> value) throws GatewayGenerationException {
         if (value instanceof IntValue) {
             return ((IntValue) value).getValue().toString();
@@ -322,14 +287,12 @@ public class CommonUtils {
         switch (type) {
             case "Int":
                 return "int";
-            case "String":
-                return "string";
             case "Boolean":
                 return "boolean";
             case "Float":
                 return "float";
             default:
-                return "any";
+                return "string";
         }
     }
 

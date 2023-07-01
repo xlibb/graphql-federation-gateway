@@ -24,7 +24,6 @@ import io.ballerina.runtime.api.values.BString;
 import io.xlibb.gateway.GatewayProject;
 import io.xlibb.gateway.exception.GatewayGenerationException;
 import io.xlibb.gateway.exception.ValidationException;
-import io.xlibb.gateway.generator.common.CommonUtils;
 import io.xlibb.gateway.generator.common.Constants;
 import org.apache.commons.io.IOUtils;
 
@@ -85,28 +84,10 @@ public class GatewayCodeGenerator {
         try {
             copyTemplateFiles(project.getOutputPath());
             generateBalSources(project, project.getOutputPath());
-            deletePartialFiles(project.getTempDir());
-
+            deletePartialFiles(project.getOutputPath());
         } catch (GatewayGenerationException | IOException | ValidationException e) {
             throw new GatewayGenerationException(e.getMessage());
         }
-    }
-
-    public static File generateGatewayJar(GatewayProject project) throws GatewayGenerationException {
-        try {
-            copyTemplateFiles(project.getTempDir());
-            generateBalSources(project);
-            deletePartialFiles(project.getTempDir());
-
-            //Generating the executable
-            CommonUtils.getCompiledBallerinaProject(project.getTempDir(),
-                    project.getOutputPath(), project.getName() + "-gateway");
-        } catch (GatewayGenerationException | IOException e) {
-            throw new GatewayGenerationException(e.getMessage());
-        } catch (ValidationException e) {
-            throw new RuntimeException(e);
-        }
-        return new File(project.getOutputPath().toString() + "/" + project.getName() + "-gateway.jar");
     }
 
     public static void copyTemplateFiles(Path targetPath) throws GatewayGenerationException, IOException {
@@ -139,18 +120,6 @@ public class GatewayCodeGenerator {
                 Files.delete(path);
             }
         } catch (IOException ignore) { }
-    }
-
-    private static void generateBalSources(GatewayProject project)
-            throws GatewayGenerationException, IOException, ValidationException {
-        GraphQLSchema graphQLSchema = project.getSchema();
-
-        writeSourceToFile(new GatewayTypeGenerator(graphQLSchema).generateSrc(), TYPES_FILE_NAME,
-                project.getTempDir());
-        writeSourceToFile(new GatewayQueryPlanGenerator(graphQLSchema).generateSrc(), QUERY_PLAN_FILE_NAME,
-                project.getTempDir());
-        writeSourceToFile(new GatewayServiceGenerator(project).generateSrc(), SERVICE_FILE_NAME,
-                project.getTempDir());
     }
 
     private static void generateBalSources(GatewayProject project, Path outputPath)

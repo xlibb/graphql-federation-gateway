@@ -18,10 +18,15 @@
 
 package io.xlibb.gateway.generator;
 
+import io.ballerina.projects.BuildOptions;
+import io.ballerina.projects.DiagnosticResult;
+import io.ballerina.projects.JBallerinaBackend;
+import io.ballerina.projects.JvmTarget;
+import io.ballerina.projects.PackageCompilation;
+import io.ballerina.projects.directory.BuildProject;
 import io.xlibb.gateway.GatewayProject;
 import io.xlibb.gateway.exception.GatewayGenerationException;
 import io.xlibb.gateway.exception.ValidationException;
-import io.xlibb.gateway.generator.common.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +55,7 @@ public class GatewayTestUtils {
 
     public static File getBallerinaExecutableJar(Path projectDir, Path tmpDir)
             throws GatewayGenerationException {
-        return CommonUtils.getCompiledBallerinaProject(projectDir.toAbsolutePath(), tmpDir,
+        return GatewayTestUtils.getCompiledBallerinaProject(projectDir.toAbsolutePath(), tmpDir,
                 projectDir.getFileName().toString());
     }
 
@@ -151,12 +156,36 @@ public class GatewayTestUtils {
         return project;
     }
 
-    public static String getCorrespondingFolderName(String schemaFileName) {
-        char firstChar = schemaFileName.charAt(0);
-        return Character.toLowerCase(firstChar) + schemaFileName.substring(1);
-    }
 
     public static String replaceWhiteSpacesAndNewLines(String str) {
         return str.replaceAll("\\s+", "").replaceAll("\\n+", "");
+    }
+
+    /**
+     * Returns the compiled executable of given ballerina project.
+     *
+     * @param projectPath    Path to the project
+     * @param targetPath     Path to the target directory
+     * @param executableName Name of the executable
+     * @return Executable file (.jar)
+     */
+    public static File getCompiledBallerinaProject(Path projectPath, Path targetPath, String executableName)
+            throws GatewayGenerationException {
+        BuildOptions buildOptions = BuildOptions.builder().build();
+        BuildProject buildProject = BuildProject.load(projectPath, buildOptions);
+        checkDiagnosticResultsForErrors(buildProject.currentPackage().runCodeGenAndModifyPlugins());
+        PackageCompilation packageCompilation = buildProject.currentPackage().getCompilation();
+        JBallerinaBackend jBallerinaBackend = JBallerinaBackend.from(packageCompilation, JvmTarget.JAVA_11);
+        checkDiagnosticResultsForErrors(jBallerinaBackend.diagnosticResult());
+        Path executablePath = targetPath.resolve(executableName + ".jar");
+        jBallerinaBackend.emit(JBallerinaBackend.OutputType.EXEC, executablePath);
+        return executablePath.toFile();
+    }
+
+    private static void checkDiagnosticResultsForErrors(DiagnosticResult diagnosticResult)
+            throws GatewayGenerationException {
+        if (diagnosticResult.hasErrors()) {
+            throw new GatewayGenerationException("Error while generating the executable.");
+        }
     }
 }
