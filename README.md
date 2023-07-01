@@ -84,7 +84,7 @@ Execute the commands below to build from the source.
 
 3. To build the project without tests:
 ```bash
-./gradlew clean build -test
+./gradlew clean build -x test
 ```
 
 4. Publish `jar` artifact to the local `.m2` repository:
