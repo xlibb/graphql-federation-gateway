@@ -2,7 +2,7 @@
 
 # Function to display script usage
 display_usage() {
-  echo "Usage: $0 [--supergraphPath <supergraphPath>] [--outputPath <outputPath>] [--port <port>]"
+  echo "Usage: $0 [--supergraphPath <supergraphPath>] [--port <port>]"
 }
 
 # Check if Ballerina is installed
