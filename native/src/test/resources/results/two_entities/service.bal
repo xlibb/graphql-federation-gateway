@@ -31,7 +31,7 @@ isolated service on new graphql:Listener(PORT) {
         UnresolvableField[] propertiesNotResolved = classifier.getUnresolvableFields();
         string queryString = wrapwithQuery("astronauts", fieldString);
         astronautsResponse|graphql:ClientError response = ASTRONAUTS_CLIENT->execute(queryString);
-        Astronaut[] result = [];
+        Astronaut[]? result = null;
         graphql:ErrorDetail[] errors = [];
         if response is graphql:ClientError {
             appendUnableToResolveErrorDetail(errors, 'field);
@@ -87,7 +87,7 @@ isolated service on new graphql:Listener(PORT) {
         UnresolvableField[] propertiesNotResolved = classifier.getUnresolvableFields();
         string queryString = wrapwithQuery("missions", fieldString);
         missionsResponse|graphql:ClientError response = MISSIONS_CLIENT->execute(queryString);
-        Mission[] result = [];
+        Mission[]? result = null;
         graphql:ErrorDetail[] errors = [];
         if response is graphql:ClientError {
             appendUnableToResolveErrorDetail(errors, 'field);

@@ -11,7 +11,7 @@ public type Mission record {|
     int id?;
     string designation?;
     string? startDate?;
-    Astronaut[] crew?;
+    Astronaut?[]? crew?;
 |};
 
 public type MissionInput record {|

@@ -51,7 +51,7 @@ isolated service on new graphql:Listener(PORT) {
         UnresolvableField[] propertiesNotResolved = classifier.getUnresolvableFields();
         string queryString = wrapwithQuery("products", fieldString);
         productsResponse|graphql:ClientError response = PRODUCT_CLIENT->execute(queryString);
-        Product[] result = [];
+        Product[]? result = null;
         graphql:ErrorDetail[] errors = [];
         if response is graphql:ClientError {
             appendUnableToResolveErrorDetail(errors, 'field);
@@ -71,7 +71,7 @@ isolated service on new graphql:Listener(PORT) {
         UnresolvableField[] propertiesNotResolved = classifier.getUnresolvableFields();
         string queryString = wrapwithQuery("reviews", fieldString, {"productId": getParamAsString(productId)});
         reviewsResponse|graphql:ClientError response = REVIEWS_CLIENT->execute(queryString);
-        Review[] result = [];
+        Review[]? result = null;
         graphql:ErrorDetail[] errors = [];
         if response is graphql:ClientError {
             appendUnableToResolveErrorDetail(errors, 'field);

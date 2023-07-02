@@ -97,7 +97,7 @@ public class GatewayExecutionTest {
                 "query_one_subgraph_service",
                 "query_two_subgraph_services",
                 "query_simple_scalar_with_parameter",
-                "query_two_subgraph_services_top_level_list"
+                "query_two_subgraph_services_top_level_list",
                 "query_with_error"
         };
     }
