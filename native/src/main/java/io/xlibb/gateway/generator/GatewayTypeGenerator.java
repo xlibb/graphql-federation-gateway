@@ -26,6 +26,7 @@ import io.ballerina.compiler.syntax.tree.ModuleMemberDeclarationNode;
 import io.ballerina.compiler.syntax.tree.ModulePartNode;
 import io.ballerina.compiler.syntax.tree.Node;
 import io.ballerina.compiler.syntax.tree.NodeList;
+import io.ballerina.compiler.syntax.tree.NodeParser;
 import io.ballerina.compiler.syntax.tree.RecordTypeDescriptorNode;
 import io.ballerina.compiler.syntax.tree.SyntaxTree;
 import io.ballerina.compiler.syntax.tree.TypeDefinitionNode;
@@ -51,11 +52,13 @@ import static io.ballerina.compiler.syntax.tree.AbstractNodeFactory.createToken;
 import static io.ballerina.compiler.syntax.tree.NodeFactory.createIdentifierToken;
 import static io.ballerina.compiler.syntax.tree.NodeFactory.createMetadataNode;
 import static io.ballerina.compiler.syntax.tree.NodeFactory.createModulePartNode;
+import static io.ballerina.compiler.syntax.tree.NodeFactory.createQualifiedNameReferenceNode;
 import static io.ballerina.compiler.syntax.tree.NodeFactory.createRecordFieldNode;
 import static io.ballerina.compiler.syntax.tree.NodeFactory.createRecordTypeDescriptorNode;
 import static io.ballerina.compiler.syntax.tree.NodeFactory.createTypeDefinitionNode;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.CLOSE_BRACE_PIPE_TOKEN;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.CLOSE_BRACE_TOKEN;
+import static io.ballerina.compiler.syntax.tree.SyntaxKind.COLON_TOKEN;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.EOF_TOKEN;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.OPEN_BRACE_PIPE_TOKEN;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.OPEN_BRACE_TOKEN;
@@ -64,6 +67,8 @@ import static io.ballerina.compiler.syntax.tree.SyntaxKind.QUESTION_MARK_TOKEN;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.RECORD_KEYWORD;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.SEMICOLON_TOKEN;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.TYPE_KEYWORD;
+import static io.xlibb.gateway.generator.common.Constants.BALLERINA_GRAPHQL_IMPORT_STATEMENT;
+
 /**
  * Class to generate the types for the gateway.
  */
@@ -86,7 +91,9 @@ public class GatewayTypeGenerator {
 
     private SyntaxTree generateSyntaxTree() throws GatewayGenerationException, ValidationException {
         List<TypeDefinitionNode> typeDefinitionNodeList = new LinkedList<>();
-        NodeList<ImportDeclarationNode> importsList = createEmptyNodeList();
+        NodeList<ImportDeclarationNode> importsList = createNodeList(
+                NodeParser.parseImportDeclaration(BALLERINA_GRAPHQL_IMPORT_STATEMENT)
+        );
 
         addCustomDefinedTypes(typeDefinitionNodeList);
         addInputTypes(typeDefinitionNodeList);
@@ -177,7 +184,7 @@ public class GatewayTypeGenerator {
     }
 
     private void addQueryResponseTypes(List<TypeDefinitionNode> typeDefinitionNodeList) throws
-            GatewayGenerationException {
+                                                                                        GatewayGenerationException {
         List<GraphQLSchemaElement> queryTypes = new ArrayList<>();
         queryTypes.addAll(CommonUtils.getQueryTypes(graphQLSchema));
         queryTypes.addAll(CommonUtils.getMutationTypes(graphQLSchema));
@@ -202,26 +209,38 @@ public class GatewayTypeGenerator {
 
     private RecordTypeDescriptorNode getRecordTypeDescriptorNode(GraphQLFieldDefinition queryDefinition)
             throws GatewayGenerationException {
-        String typename = CommonUtils.getTypeNameFromGraphQLType(queryDefinition.getType());
+        String typename = CommonUtils.getNonNullTypeFromGraphQLType(queryDefinition.getType());
         return createRecordTypeDescriptorNode(
                 createToken(RECORD_KEYWORD),
                 createToken(OPEN_BRACE_TOKEN),
-                createNodeList(createRecordFieldNode(
-                        null,
-                        null,
-                        createRecordTypeDescriptorNode(createToken(RECORD_KEYWORD),
-                                createToken(OPEN_BRACE_PIPE_TOKEN),
-                                createNodeList(
-                                        createRecordFieldNode(null,
-                                                null,
-                                                createIdentifierToken(typename),
-                                                createIdentifierToken(queryDefinition.getName()),
-                                                null,
-                                                createToken(SEMICOLON_TOKEN))),
+                createNodeList(
+                        createRecordFieldNode(null,
                                 null,
-                                createToken(CLOSE_BRACE_PIPE_TOKEN)),
-                        createIdentifierToken("data"), null,
-                        createToken(SEMICOLON_TOKEN))),
+                                createQualifiedNameReferenceNode(
+                                        createIdentifierToken("graphql"),
+                                        createToken(COLON_TOKEN),
+                                        createIdentifierToken("ErrorDetail[]")
+                                ),
+                                createIdentifierToken("errors"),
+                                createToken(QUESTION_MARK_TOKEN),
+                                createToken(SEMICOLON_TOKEN)),
+                        createRecordFieldNode(
+                                null,
+                                null,
+                                createRecordTypeDescriptorNode(createToken(RECORD_KEYWORD),
+                                        createToken(OPEN_BRACE_PIPE_TOKEN),
+                                        createNodeList(
+                                                createRecordFieldNode(null,
+                                                        null,
+                                                        createIdentifierToken(typename),
+                                                        createIdentifierToken(queryDefinition.getName()),
+                                                        null,
+                                                        createToken(SEMICOLON_TOKEN))),
+                                        null,
+                                        createToken(CLOSE_BRACE_PIPE_TOKEN)),
+                                createIdentifierToken("data"), null,
+                                createToken(SEMICOLON_TOKEN))
+                        ),
                 null,
                 createToken(CLOSE_BRACE_TOKEN));
     }

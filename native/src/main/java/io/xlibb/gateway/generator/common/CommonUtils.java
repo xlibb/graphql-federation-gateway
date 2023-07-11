@@ -110,13 +110,13 @@ public class CommonUtils {
      * @return Type name
      * @throws GatewayGenerationException if the type is not supported
      */
-    public static String getTypeNameFromGraphQLType(GraphQLType graphQLType) throws GatewayGenerationException {
+    public static String getTypeFromGraphQLType(GraphQLType graphQLType) throws GatewayGenerationException {
         if (graphQLType instanceof GraphQLObjectType) {
             return ((GraphQLObjectType) graphQLType).getName() + "?";
         } else if (graphQLType instanceof GraphQLList) {
-            return getTypeNameFromGraphQLType(((GraphQLList) graphQLType).getOriginalWrappedType()) + "[]?";
+            return getTypeFromGraphQLType(((GraphQLList) graphQLType).getOriginalWrappedType()) + "[]?";
         } else if (graphQLType instanceof GraphQLNonNull) {
-            return getNonNullTypeName(((GraphQLNonNull) graphQLType).getOriginalWrappedType());
+            return getNonNullTypeFromGraphQLType(((GraphQLNonNull) graphQLType).getOriginalWrappedType());
         } else if (graphQLType instanceof GraphQLScalarType) {
             return getBallerinaTypeName(((GraphQLScalarType) graphQLType).getName()) + "?";
         } else {
@@ -124,13 +124,15 @@ public class CommonUtils {
         }
     }
 
-    private static String getNonNullTypeName(GraphQLType graphQLType) throws GatewayGenerationException {
+    public static String getNonNullTypeFromGraphQLType(GraphQLType graphQLType) throws GatewayGenerationException {
         if (graphQLType instanceof GraphQLObjectType) {
             return ((GraphQLObjectType) graphQLType).getName();
         } else if (graphQLType instanceof GraphQLList) {
-            return getTypeNameFromGraphQLType(((GraphQLList) graphQLType).getOriginalWrappedType()) + "[]";
+            return getTypeFromGraphQLType(((GraphQLList) graphQLType).getOriginalWrappedType()) + "[]";
         } else if (graphQLType instanceof GraphQLScalarType) {
             return getBallerinaTypeName(((GraphQLScalarType) graphQLType).getName());
+        } else if (graphQLType instanceof GraphQLNonNull) {
+            return getNonNullTypeFromGraphQLType(((GraphQLNonNull) graphQLType).getOriginalWrappedType());
         } else {
             throw new GatewayGenerationException("Unsupported type: " + graphQLType);
         }
@@ -224,6 +226,36 @@ public class CommonUtils {
             return isScalarType(((GraphQLNonNull) queryType).getOriginalWrappedType());
         } else if (queryType instanceof GraphQLList) {
             return isScalarType(((GraphQLList) queryType).getOriginalWrappedType());
+        }
+        return false;
+    }
+
+    /**
+     * Return whether the GraphQL type is a list type.
+     *
+     * @param queryType GraphQL type
+     * @return Whether the GraphQL type is a list type
+     */
+    public static Boolean isListType(GraphQLType queryType) {
+        if (queryType instanceof GraphQLList) {
+            return true;
+        } else if (queryType instanceof GraphQLNonNull) {
+            return isListType(((GraphQLNonNull) queryType).getOriginalWrappedType());
+        }
+        return false;
+    }
+
+    /**
+     * Return whether the GraphQL type is an object type.
+     *
+     * @param queryType GraphQL type
+     * @return Whether the GraphQL type is an object type
+     */
+    public static Boolean isObjectType(GraphQLType queryType) {
+        if (queryType instanceof GraphQLObjectType) {
+            return true;
+        } else if (queryType instanceof GraphQLNonNull) {
+            return isObjectType(((GraphQLNonNull) queryType).getOriginalWrappedType());
         }
         return false;
     }

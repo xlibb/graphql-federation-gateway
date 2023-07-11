@@ -1,4 +1,30 @@
 {
+  "errors": [
+    {
+      "message": "No crew members",
+      "path": [
+        "missions",
+        1,
+        "crew"
+      ]
+    },
+    {
+      "message": "No crew members",
+      "path": [
+        "missions",
+        2,
+        "crew"
+      ]
+    },
+    {
+      "message": "No crew members",
+      "path": [
+        "missions",
+        3,
+        "crew"
+      ]
+    }
+  ],
   "data": {
     "missions": [
       {
@@ -20,15 +46,15 @@
       },
       {
         "designation": "Apollo 4",
-        "crew": []
+        "crew": null
       },
       {
         "designation": "Apollo 5",
-        "crew": []
+        "crew": null
       },
       {
         "designation": "Apollo 6",
-        "crew": []
+        "crew": null
       },
       {
         "designation": "Apollo 7",
