@@ -1,0 +1,17 @@
+isolated remote function @{query}(graphql:Field 'field, graphql:Context context @{params}) returns @{responseType}|error{
+    QueryFieldClassifier classifier = new ('field, queryPlan, @{clientName});
+    string fieldString = classifier.getFieldString();
+    UnresolvableField[] propertiesNotResolved = classifier.getUnresolvableFields();
+    string queryString = wrapwithMutation("@{query}", fieldString @{queryArgs});
+    @{query}Response|graphql:ClientError response = @{clientName}_CLIENT->execute(queryString);
+    if response is graphql:ClientError {
+        return error("Unable to perform the operation");
+    }
+    @{responseType} result = response.data.@{query};
+    graphql:ErrorDetail[] errors = [];
+    appendErrorDetailsFromResponse(errors, response?.errors);
+    Resolver resolver = new (queryPlan, result.toJson(), "@{basicResponseType}", propertiesNotResolved, ["@{query}"], errors);
+    json finalResult = resolver.getResult();
+    addErrorsToGraphqlContext(context, errors);
+    return finalResult.cloneWithType();
+}
