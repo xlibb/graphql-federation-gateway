@@ -47,7 +47,7 @@ import java.util.Objects;
  */
 public class CommonUtilTest extends GraphqlTest {
 
-    @Test(description = "Test getting defined type objects", dataProvider = "SchemaAndTypeNamesProvider")
+    @Test(dataProvider = "SchemaAndTypeNamesProvider")
     public void testGetCustomDefinedObjectTypeNames(GatewayProject project, String[] typeNames) {
         Object[] namesFound = CommonUtils.getCustomDefinedObjectTypeNames(project.getSchema()).toArray();
         Assert.assertEqualsNoOrder(typeNames, namesFound);
@@ -66,7 +66,7 @@ public class CommonUtilTest extends GraphqlTest {
         };
     }
 
-    @Test(description = "Test get query types", dataProvider = "SchemaAndQueryTypesProvider")
+    @Test(dataProvider = "SchemaAndQueryTypesProvider")
     public void testGetQueryTypes(GatewayProject project, String[] queryTypes) {
         Object[] queryTypeNames = CommonUtils.getQueryTypes(project.getSchema()).stream().map(
                 field -> ((GraphQLFieldDefinition) field).getName()
@@ -83,7 +83,7 @@ public class CommonUtilTest extends GraphqlTest {
         };
     }
 
-    @Test(description = "Test get mutation types", dataProvider = "SchemaAndMutationTypesProvider")
+    @Test(dataProvider = "SchemaAndMutationTypesProvider")
     public void testGetMutationTypes(GatewayProject project, String[] queryTypes) {
         Object[] queryTypeNames = CommonUtils.getMutationTypes(project.getSchema()).stream().map(
                 field -> ((GraphQLFieldDefinition) field).getName()
@@ -153,7 +153,7 @@ public class CommonUtilTest extends GraphqlTest {
         };
     }
 
-    @Test(description = "Test get ballerina type name", dataProvider = "BallerinaTypeProvider")
+    @Test(dataProvider = "BallerinaTypeProvider")
     public void testGetBallerinaTypeName(String type, String expectedName) {
         Assert.assertEquals(CommonUtils.getBallerinaTypeName(type), expectedName);
     }

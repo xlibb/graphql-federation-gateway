@@ -187,7 +187,6 @@ public class GatewayQueryPlanGenerator {
                 ),
                 createToken(SEMICOLON_TOKEN)
         );
-
         nodeList.add(tableNode);
     }
 
@@ -246,7 +245,6 @@ public class GatewayQueryPlanGenerator {
         );
         nodeList.add(keyNode);
         nodeList.add(createToken(COMMA_TOKEN));
-
         Node fieldNode = createSpecificFieldNode(
                 null,
                 createIdentifierToken("fields"),
@@ -260,7 +258,6 @@ public class GatewayQueryPlanGenerator {
                 )
         );
         nodeList.add(fieldNode);
-
         return createSeparatedNodeList(nodeList);
     }
 
@@ -311,7 +308,6 @@ public class GatewayQueryPlanGenerator {
                 }
             }
         }
-
         return keys;
     }
 
@@ -366,14 +362,12 @@ public class GatewayQueryPlanGenerator {
                     getFieldTableEntry(field),
                     createToken(CLOSE_BRACE_TOKEN)
             );
-
             nodeList.add(entryNode);
             i += 1;
             if (i < fieldsLength) {
                 nodeList.add(createToken(COMMA_TOKEN));
             }
         }
-
         return createSeparatedNodeList(nodeList);
     }
 
@@ -395,9 +389,7 @@ public class GatewayQueryPlanGenerator {
                         )
                 )
         );
-
         fieldNodeList.add(createToken(COMMA_TOKEN));
-
         fieldNodeList.add(
                 createSpecificFieldNode(
                         null,
@@ -414,9 +406,7 @@ public class GatewayQueryPlanGenerator {
                         )
                 )
         );
-
         fieldNodeList.add(createToken(COMMA_TOKEN));
-
         fieldNodeList.add(
                 createSpecificFieldNode(
                         null,
@@ -433,7 +423,6 @@ public class GatewayQueryPlanGenerator {
                         )
                 )
         );
-
         return createSeparatedNodeList(fieldNodeList);
     }
 
@@ -446,5 +435,4 @@ public class GatewayQueryPlanGenerator {
             ));
         }
     }
-
 }

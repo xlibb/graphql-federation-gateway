@@ -28,15 +28,17 @@ This will generate a gateway executable for a given supergraph schema.
 ```bash
 ./gateway.sh -s <supergraphPath> -p <port>
 ```
->**Note:**\
-> `supergraphPath` is a mandatory argument. \
-> If the port is not provided the default port 9090 will be used.
+
+- `supergraphPath` is a mandatory argument.
+- If the port is not provided the default port `9090` will be used.
 
 ### Try out the example
 1. Navigate into `examples/astronauts_missions_example` directory. There's two federated graphql services and a supergraph schema.
 2. In terminal execute `./gateway.sh -s supergraph.graphql` to start the gateway.
 3. In terminal execute `bal run` inside both `astronauts_service` and `missions_service` directories to start the subgraph services.
-4. Try out the following query in the graphql client.
+3. Navigate into `astronuats_service` directory and execute `bal run` in the terminal to start the `astronauts_service` subgraph service.
+4. Navigate into `missions_service` directory and execute `bal run` in the terminal to start the `missions_service` subgraph service.
+5. Try out the following query in the graphql client.
 
 ```graphql
 query {
