@@ -94,9 +94,12 @@ import static io.ballerina.compiler.syntax.tree.SyntaxKind.SEMICOLON_TOKEN;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.STRING_LITERAL;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.STRING_LITERAL_TOKEN;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.TABLE_KEYWORD;
+import static io.xlibb.gateway.generator.CommonUtils.ARGUMENT_GRAPH;
+import static io.xlibb.gateway.generator.CommonUtils.ARGUMENT_KEY;
 import static io.xlibb.gateway.generator.CommonUtils.CLIENT_NAME_DECLARATION;
 import static io.xlibb.gateway.generator.CommonUtils.CLIENT_NAME_PLACEHOLDER;
 import static io.xlibb.gateway.generator.CommonUtils.CLIENT_NAME_VALUE_PLACEHOLDER;
+import static io.xlibb.gateway.generator.CommonUtils.DIRECTIVE_JOIN_TYPE;
 import static io.xlibb.gateway.generator.CommonUtils.getJoinGraphs;
 
 /**
@@ -297,7 +300,7 @@ public class GatewayQueryPlanGenerator {
         List<GraphQLAppliedDirective> directives = SpecReader.getObjectTypeDirectives(this.graphQLSchema, name);
 
         for (GraphQLAppliedDirective directive : directives) {
-            if (directive.getName().equals(CommonUtils.DIRECTIVE_JOIN_TYPE)) {
+            if (directive.getName().equals(DIRECTIVE_JOIN_TYPE)) {
                 try {
                     String graph = getGraphOfJoinTypeArgument(directive);
                     String key = getKeyOfJoinTypeArgument(name, directive);
@@ -313,7 +316,7 @@ public class GatewayQueryPlanGenerator {
     private String getGraphOfJoinTypeArgument(GraphQLAppliedDirective directive)
             throws GatewayGenerationException, ValidationException {
         for (GraphQLAppliedDirectiveArgument argument : directive.getArguments()) {
-            if (argument.getName().equals(CommonUtils.ARGUMENT_GRAPH)) {
+            if (argument.getName().equals(ARGUMENT_GRAPH)) {
                 Object value = argument.getArgumentValue().getValue();
                 if (value == null) {
                     throw new ValidationException("graph argument value is null");
@@ -330,7 +333,7 @@ public class GatewayQueryPlanGenerator {
             throws GatewayGenerationException {
         try {
             for (GraphQLAppliedDirectiveArgument argument : directive.getArguments()) {
-                if (argument.getName().equals(CommonUtils.ARGUMENT_KEY)) {
+                if (argument.getName().equals(ARGUMENT_KEY)) {
                     return ((StringValue) Objects.requireNonNull(argument.getArgumentValue().getValue())).getValue();
                 }
             }

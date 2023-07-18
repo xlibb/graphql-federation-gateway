@@ -52,9 +52,14 @@ import static io.ballerina.compiler.syntax.tree.AbstractNodeFactory.createNodeLi
 import static io.ballerina.compiler.syntax.tree.AbstractNodeFactory.createToken;
 import static io.ballerina.compiler.syntax.tree.NodeFactory.createModulePartNode;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.EOF_TOKEN;
+import static io.xlibb.gateway.generator.CommonUtils.ARGUMENT_GRAPH;
 import static io.xlibb.gateway.generator.CommonUtils.BALLERINA_GRAPHQL_IMPORT_STATEMENT;
 import static io.xlibb.gateway.generator.CommonUtils.CLIENT_NAME_PLACEHOLDER;
 import static io.xlibb.gateway.generator.CommonUtils.CLIENT_NAME_VALUE_PLACEHOLDER;
+import static io.xlibb.gateway.generator.CommonUtils.DIRECTIVE_JOIN_FIELD;
+import static io.xlibb.gateway.generator.CommonUtils.DIRECTIVE_JOIN_TYPE;
+import static io.xlibb.gateway.generator.CommonUtils.TYPE_MUTATION;
+import static io.xlibb.gateway.generator.CommonUtils.TYPE_QUERY;
 import static io.xlibb.gateway.generator.CommonUtils.getJoinGraphs;
 import static io.xlibb.gateway.generator.CommonUtils.getResourceTemplateFilePath;
 
@@ -171,7 +176,7 @@ public class GatewayServiceGenerator {
                 template = Files.readString(getResourceTemplateFilePath(project.getTempDir(),
                         RESOURCE_FUNCTION_TEMPLATE_FILE));
             }
-            type = CommonUtils.TYPE_QUERY;
+            type = TYPE_QUERY;
         } else if (functionType == FunctionType.MUTATION) {
             if (CommonUtils.isScalarType(returnType)) {
                 template = Files.readString(getResourceTemplateFilePath(project.getTempDir(),
@@ -180,7 +185,7 @@ public class GatewayServiceGenerator {
                 template = Files.readString(getResourceTemplateFilePath(project.getTempDir(),
                         REMOTE_FUNCTION_TEMPLATE_FILE));
             }
-            type = CommonUtils.TYPE_MUTATION;
+            type = TYPE_MUTATION;
         } else {
             throw new GatewayGenerationException("Unsupported function type");
         }
@@ -253,8 +258,8 @@ public class GatewayServiceGenerator {
     private String getClientNameFromFieldDefinition(GraphQLFieldDefinition graphQLFieldDefinition, String parentType)
             throws GatewayGenerationException {
         for (GraphQLAppliedDirective directive : graphQLFieldDefinition.getAppliedDirectives()) {
-            Object value = directive.getArgument(CommonUtils.ARGUMENT_GRAPH).getArgumentValue().getValue();
-            if (directive.getName().equals(CommonUtils.DIRECTIVE_JOIN_FIELD) && value instanceof EnumValue) {
+            Object value = directive.getArgument(ARGUMENT_GRAPH).getArgumentValue().getValue();
+            if (directive.getName().equals(DIRECTIVE_JOIN_FIELD) && value instanceof EnumValue) {
                 return ((EnumValue) value).getName();
             }
         }
@@ -262,8 +267,8 @@ public class GatewayServiceGenerator {
         List<GraphQLAppliedDirective> appliedDirectivesOnParent =
                 SpecReader.getObjectTypeDirectives(project.getSchema(), parentType);
         for (GraphQLAppliedDirective directive : appliedDirectivesOnParent) {
-            Object value = directive.getArgument(CommonUtils.ARGUMENT_GRAPH).getArgumentValue().getValue();
-            if (directive.getName().equals(CommonUtils.DIRECTIVE_JOIN_TYPE) && value instanceof EnumValue) {
+            Object value = directive.getArgument(ARGUMENT_GRAPH).getArgumentValue().getValue();
+            if (directive.getName().equals(DIRECTIVE_JOIN_TYPE) && value instanceof EnumValue) {
                 return ((EnumValue) value).getName();
             }
         }
