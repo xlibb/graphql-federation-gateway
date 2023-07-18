@@ -56,8 +56,8 @@ public class Utils {
     private static final String[] TYPES = new String[] {"int", "any", "anydata", "boolean", "byte", "float", "int",
             "json", "string", "table", "var", "xml"};
 
-    public static final List<String> BAL_KEYWORDS;
-    public static final List<String> BAL_TYPES;
+    public static final List<String> BAL_KEYWORDS = Collections.unmodifiableList(Arrays.asList(KEYWORDS));
+    public static final List<String> BAL_TYPES = Collections.unmodifiableList(Arrays.asList(TYPES));
     public static final String GRAPHQL_ID_TYPE = "ID";
     public static final String GRAPHQL_STRING_TYPE = "String";
     public static final String GRAPHQL_INT_TYPE = "Int";
@@ -68,11 +68,6 @@ public class Utils {
     public static final String BALLERINA_FLOAT_TYPE = "float";
     public static final String BALLERINA_BOOLEAN_TYPE = "boolean";
     public static final String BALLERINA_ANYDATA_TYPE = "anydata";
-
-    static {
-        BAL_KEYWORDS = Collections.unmodifiableList(Arrays.asList(KEYWORDS));
-        BAL_TYPES = Collections.unmodifiableList(Arrays.asList(TYPES));
-    }
 
     public static final String ESCAPE_PATTERN = "([\\[\\]\\\\?!<>@#&~`*\\-=^+();:\\/\\_{}\\s|.$])";
 
