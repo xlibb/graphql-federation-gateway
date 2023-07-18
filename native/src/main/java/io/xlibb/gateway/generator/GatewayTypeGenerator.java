@@ -34,7 +34,6 @@ import io.ballerina.tools.text.TextDocument;
 import io.ballerina.tools.text.TextDocuments;
 import io.xlibb.gateway.exception.GatewayGenerationException;
 import io.xlibb.gateway.exception.ValidationException;
-import io.xlibb.gateway.generator.common.CommonUtils;
 import io.xlibb.gateway.graphql.SpecReader;
 import io.xlibb.gateway.graphql.components.FieldType;
 import io.xlibb.gateway.graphql.components.SchemaTypes;
@@ -67,7 +66,7 @@ import static io.ballerina.compiler.syntax.tree.SyntaxKind.QUESTION_MARK_TOKEN;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.RECORD_KEYWORD;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.SEMICOLON_TOKEN;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.TYPE_KEYWORD;
-import static io.xlibb.gateway.generator.common.Constants.BALLERINA_GRAPHQL_IMPORT_STATEMENT;
+import static io.xlibb.gateway.generator.CommonUtils.BALLERINA_GRAPHQL_IMPORT_STATEMENT;
 
 /**
  * Class to generate the types for the gateway.

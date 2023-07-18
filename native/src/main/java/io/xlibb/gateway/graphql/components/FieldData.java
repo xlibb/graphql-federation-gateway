@@ -24,8 +24,8 @@ import io.xlibb.gateway.exception.GatewayGenerationException;
 
 import java.util.List;
 
-import static io.xlibb.gateway.generator.common.CommonUtils.getClientFromFieldDefinition;
-import static io.xlibb.gateway.generator.common.CommonUtils.getTypeFromFieldDefinition;
+import static io.xlibb.gateway.generator.CommonUtils.getClientFromFieldDefinition;
+import static io.xlibb.gateway.generator.CommonUtils.getTypeFromFieldDefinition;
 
 /**
  * Class to hold data related to a graphql type field.

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package io.xlibb.gateway.generator.common;
+package io.xlibb.gateway.generator;
 
 import graphql.language.Argument;
 import graphql.language.BooleanValue;
@@ -64,6 +64,35 @@ import java.util.stream.Collectors;
  * Common utility functions used inside the package.
  */
 public class CommonUtils {
+    public static final String TYPE_QUERY = "Query";
+    public static final String TYPE_MUTATION = "Mutation";
+    public static final String TYPE_SUBSCRIPTION = "Subscription";
+
+    public static final String GRAHQL_TYPE_INT = "Int";
+    public static final String GRAHQL_TYPE_FLOAT = "Float";
+    public static final String GRAHQL_TYPE_BOOLEAN = "Boolean";
+
+    public static final String BALLERINA_TYPE_INT = "int";
+    public static final String BALLERINA_TYPE_FLOAT = "float";
+    public static final String BALLERINA_TYPE_BOOLEAN = "boolean";
+    public static final String BALLERINA_TYPE_STRING = "string";
+
+    public static final String ARGUMENT_GRAPH = "graph";
+    public static final String ARGUMENT_EXTERNAL = "external";
+    public static final String ARGUMENT_KEY = "key";
+
+    public static final String DIRECTIVE_JOIN_FIELD = "join__field";
+    public static final String DIRECTIVE_JOIN_TYPE = "join__type";
+
+    public static final String TYPE_JOIN_GRAPH = "join__Graph";
+
+    public static final String BALLERINA_GRAPHQL_IMPORT_STATEMENT = "import ballerina/graphql;";
+    public static final String GATEWAY_TEMPLATE_FILES_DIRECTORY = "gateway_templates";
+
+    public static final String CLIENT_NAME_PLACEHOLDER = "@\\{clientName}";
+    public static final String CLIENT_NAME_VALUE_PLACEHOLDER = "@\\{clientNameValue}";
+    public static final String CLIENT_NAME_DECLARATION = "public const string " + CLIENT_NAME_PLACEHOLDER
+            + " = \"" + CLIENT_NAME_VALUE_PLACEHOLDER + "\";";
 
     /**
      * Return the list of custom defined object type names in the GraphQL schema.
@@ -73,8 +102,10 @@ public class CommonUtils {
      */
     public static List<String> getCustomDefinedObjectTypeNames(GraphQLSchema graphQLSchema) {
         return SpecReader.getObjectTypeNames(graphQLSchema).stream()
-                .filter(name -> name != null && !name.isEmpty() && !name.equals("Query") && !name.equals("Mutation") &&
-                        !name.equals("Subscription")).collect(Collectors.toList());
+                .filter(name -> name != null
+                        && !name.isEmpty() && !name.equals(TYPE_QUERY)
+                        && !name.equals(TYPE_MUTATION)
+                        && !name.equals(TYPE_SUBSCRIPTION)).collect(Collectors.toList());
     }
 
     /**
@@ -163,13 +194,13 @@ public class CommonUtils {
     public static String getClientFromFieldDefinition(FieldDefinition definition,
                                                       List<GraphQLAppliedDirective> joinTypeDirectivesOnParent) {
         for (Directive directive : definition.getDirectives()) {
-            if (directive.getName().equals("join__field")) {
+            if (directive.getName().equals(DIRECTIVE_JOIN_FIELD)) {
                 String graph = null;
                 Boolean external = null;
                 for (Argument argument : directive.getArguments()) {
-                    if (argument.getName().equals("graph")) {
+                    if (argument.getName().equals(ARGUMENT_GRAPH)) {
                         graph = ((EnumValue) argument.getValue()).getName();
-                    } else if (argument.getName().equals("external")) {
+                    } else if (argument.getName().equals(ARGUMENT_EXTERNAL)) {
                         external = ((BooleanValue) argument.getValue()).isValue();
                     }
                 }
@@ -183,7 +214,7 @@ public class CommonUtils {
         if (joinTypeDirectivesOnParent.size() == 1) {
             for (GraphQLAppliedDirectiveArgument argument : joinTypeDirectivesOnParent.get(0).getArguments()) {
                 Object value = argument.getArgumentValue().getValue();
-                if (argument.getName().equals("graph") && value instanceof EnumValue) {
+                if (argument.getName().equals(ARGUMENT_GRAPH) && value instanceof EnumValue) {
                     return ((EnumValue) value).getName();
                 }
             }
@@ -268,7 +299,7 @@ public class CommonUtils {
      */
     public static Map<String, JoinGraph> getJoinGraphs(GraphQLSchema graphQLSchema) throws ValidationException {
         Map<String, JoinGraph> joinGraphs = new HashMap<>();
-        GraphQLType joinGraph = graphQLSchema.getType("join__Graph");
+        GraphQLType joinGraph = graphQLSchema.getType(TYPE_JOIN_GRAPH);
         if (joinGraph != null) {
             for (GraphQLEnumValueDefinition element : ((GraphQLEnumType) joinGraph).getValues()) {
                 joinGraphs.put(element.getName(), new JoinGraph(element));
@@ -290,7 +321,7 @@ public class CommonUtils {
         Path path = null;
         ClassLoader classLoader = CommonUtils.class.getClassLoader();
         InputStream inputStream =
-                classLoader.getResourceAsStream(Constants.GATEWAY_TEMPLATE_FILES_DIRECTORY + "/" + filename);
+                classLoader.getResourceAsStream(GATEWAY_TEMPLATE_FILES_DIRECTORY + "/" + filename);
         if (inputStream != null) {
             String resource = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
             path = tmpDir.resolve(filename);
@@ -315,16 +346,16 @@ public class CommonUtils {
         }
     }
 
-    static String getBallerinaTypeName(String type) {
+    public static String getBallerinaTypeName(String type) {
         switch (type) {
-            case "Int":
-                return "int";
-            case "Boolean":
-                return "boolean";
-            case "Float":
-                return "float";
+            case GRAHQL_TYPE_INT:
+                return BALLERINA_TYPE_INT;
+            case GRAHQL_TYPE_BOOLEAN:
+                return BALLERINA_TYPE_BOOLEAN;
+            case GRAHQL_TYPE_FLOAT:
+                return BALLERINA_TYPE_FLOAT;
             default:
-                return "string";
+                return BALLERINA_TYPE_STRING;
         }
     }
 
