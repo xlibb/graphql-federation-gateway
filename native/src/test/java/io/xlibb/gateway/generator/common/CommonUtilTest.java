@@ -27,6 +27,7 @@ import graphql.schema.GraphQLFieldDefinition;
 import io.xlibb.gateway.GatewayProject;
 import io.xlibb.gateway.exception.GatewayGenerationException;
 import io.xlibb.gateway.exception.ValidationException;
+import io.xlibb.gateway.generator.CommonUtils;
 import io.xlibb.gateway.generator.GatewayCodeGenerator;
 import io.xlibb.gateway.generator.GatewayTestUtils;
 import io.xlibb.gateway.generator.GraphqlTest;

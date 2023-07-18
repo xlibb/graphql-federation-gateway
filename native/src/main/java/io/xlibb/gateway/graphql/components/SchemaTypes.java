@@ -24,7 +24,7 @@ import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
 import io.xlibb.gateway.exception.GatewayGenerationException;
-import io.xlibb.gateway.generator.common.CommonUtils;
+import io.xlibb.gateway.generator.CommonUtils;
 import io.xlibb.gateway.graphql.SpecReader;
 import io.xlibb.gateway.graphql.Utils;
 
@@ -72,7 +72,7 @@ public class SchemaTypes {
 
         List<GraphQLAppliedDirective> joinTypeDirectives =
                 SpecReader.getObjectTypeDirectives(graphQLSchema, typeName).stream().filter(
-                        directive -> directive.getName().equals("join__type")
+                        directive -> directive.getName().equals(CommonUtils.DIRECTIVE_JOIN_TYPE)
                 ).collect(Collectors.toList());
         for (Map.Entry<String, FieldDefinition> entry :
                 SpecReader.getObjectTypeFieldDefinitionMap(graphQLSchema, typeName).entrySet()) {

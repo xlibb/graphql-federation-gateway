@@ -24,7 +24,6 @@ import io.ballerina.runtime.api.values.BString;
 import io.xlibb.gateway.GatewayProject;
 import io.xlibb.gateway.exception.GatewayGenerationException;
 import io.xlibb.gateway.exception.ValidationException;
-import io.xlibb.gateway.generator.common.Constants;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -110,10 +109,10 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
     public Object[][] getInvalidArgumentsTestData() {
         String tempPath = tmpDir.toAbsolutePath().toString();
         return new Object[][]{
-                {"invalid_schema_path", tempPath, Constants.ERROR_INVALID_SUPERGRAPH_FILE_PATH},
-                {"two_entities", "invalid_output_path", Constants.ERROR_INVALID_OUTPUT_PATH},
-                {"invalid/missing_directive_definitions", tempPath, Constants.ERROR_INVALID_SCHEMA},
-                {"invalid/missing_query_type", tempPath, Constants.ERROR_INVALID_SCHEMA}
+                {"invalid_schema_path", tempPath, GatewayCodeGenerator.ERROR_INVALID_SUPERGRAPH_FILE_PATH},
+                {"two_entities", "invalid_output_path", GatewayCodeGenerator.ERROR_INVALID_OUTPUT_PATH},
+                {"invalid/missing_directive_definitions", tempPath, GatewayCodeGenerator.ERROR_INVALID_SCHEMA},
+                {"invalid/missing_query_type", tempPath, GatewayCodeGenerator.ERROR_INVALID_SCHEMA}
         };
     }
 
@@ -128,7 +127,7 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
         file.setReadOnly();
         BString output = generateGateway(StringUtils.fromString(schemaPath),
                 StringUtils.fromString(readOnlyPath.toString()), StringUtils.fromString("9000"));
-        Assert.assertEquals(output.getValue(), Constants.ERROR_OUTPUT_PATH_NOT_WRITABLE);
+        Assert.assertEquals(output.getValue(), GatewayCodeGenerator.ERROR_OUTPUT_PATH_NOT_WRITABLE);
     }
 
 }

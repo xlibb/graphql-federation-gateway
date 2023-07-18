@@ -36,7 +36,6 @@ import io.ballerina.tools.text.TextDocuments;
 import io.xlibb.gateway.GatewayProject;
 import io.xlibb.gateway.exception.GatewayGenerationException;
 import io.xlibb.gateway.exception.ValidationException;
-import io.xlibb.gateway.generator.common.CommonUtils;
 import io.xlibb.gateway.graphql.SpecReader;
 import io.xlibb.gateway.graphql.components.FieldType;
 import io.xlibb.gateway.graphql.components.JoinGraph;
@@ -53,32 +52,11 @@ import static io.ballerina.compiler.syntax.tree.AbstractNodeFactory.createNodeLi
 import static io.ballerina.compiler.syntax.tree.AbstractNodeFactory.createToken;
 import static io.ballerina.compiler.syntax.tree.NodeFactory.createModulePartNode;
 import static io.ballerina.compiler.syntax.tree.SyntaxKind.EOF_TOKEN;
-import static io.xlibb.gateway.generator.common.CommonUtils.getJoinGraphs;
-import static io.xlibb.gateway.generator.common.CommonUtils.getResourceTemplateFilePath;
-import static io.xlibb.gateway.generator.common.Constants.BALLERINA_GRAPHQL_IMPORT_STATEMENT;
-import static io.xlibb.gateway.generator.common.Constants.BALLERINA_LOG_IMPORT_STATEMENT;
-import static io.xlibb.gateway.generator.common.Constants.BASIC_RESPONSE_TYPE_PLACEHOLDER;
-import static io.xlibb.gateway.generator.common.Constants.CLIENT_NAME_PLACEHOLDER;
-import static io.xlibb.gateway.generator.common.Constants.CLIENT_NAME_VALUE_PLACEHOLDER;
-import static io.xlibb.gateway.generator.common.Constants.CONFIGURABLE_PORT_STATEMENT;
-import static io.xlibb.gateway.generator.common.Constants.FUNCTION_PARAM_PLACEHOLDER;
-import static io.xlibb.gateway.generator.common.Constants.GET_CLIENT_FUNCTION_TEMPLATE_FILE;
-import static io.xlibb.gateway.generator.common.Constants.GRAPHQL_CLIENT_DECLARATION_STATEMENT;
-import static io.xlibb.gateway.generator.common.Constants.INITIAL_RESULT;
-import static io.xlibb.gateway.generator.common.Constants.INITIAL_RESULT_ASSIGNMENT;
-import static io.xlibb.gateway.generator.common.Constants.MATCH_CLIENT_STATEMENTS_PLACEHOLDER;
-import static io.xlibb.gateway.generator.common.Constants.MATCH_CLIENT_STATEMENT_TEMPLATE;
-import static io.xlibb.gateway.generator.common.Constants.PORT_PLACEHOLDER;
-import static io.xlibb.gateway.generator.common.Constants.QUERY_ARGS_PLACEHOLDER;
-import static io.xlibb.gateway.generator.common.Constants.QUERY_PLACEHOLDER;
-import static io.xlibb.gateway.generator.common.Constants.REMOTE_FUNCTION_TEMPLATE_FILE;
-import static io.xlibb.gateway.generator.common.Constants.RESOURCE_FUNCTIONS_PLACEHOLDER;
-import static io.xlibb.gateway.generator.common.Constants.RESOURCE_FUNCTION_TEMPLATE_FILE;
-import static io.xlibb.gateway.generator.common.Constants.RESPONSE_TYPE_PLACEHOLDER;
-import static io.xlibb.gateway.generator.common.Constants.SCALAR_RETURN_TYPE_REMOTE_FUNCTION_TEMPLATE_FILE;
-import static io.xlibb.gateway.generator.common.Constants.SCALAR_RETURN_TYPE_RESOURCE_FUNCTION_TEMPLATE_FILE;
-import static io.xlibb.gateway.generator.common.Constants.SERVICE_DECLARATION_TEMPLATE_FILE;
-import static io.xlibb.gateway.generator.common.Constants.URL_PLACEHOLDER;
+import static io.xlibb.gateway.generator.CommonUtils.BALLERINA_GRAPHQL_IMPORT_STATEMENT;
+import static io.xlibb.gateway.generator.CommonUtils.CLIENT_NAME_PLACEHOLDER;
+import static io.xlibb.gateway.generator.CommonUtils.CLIENT_NAME_VALUE_PLACEHOLDER;
+import static io.xlibb.gateway.generator.CommonUtils.getJoinGraphs;
+import static io.xlibb.gateway.generator.CommonUtils.getResourceTemplateFilePath;
 
 enum FunctionType {
     QUERY,
@@ -89,6 +67,34 @@ enum FunctionType {
  * Class to generate service code for the gateway.
  */
 public class GatewayServiceGenerator {
+    public static final String QUERY_PLACEHOLDER = "@\\{query}";
+    public static final String FUNCTION_PARAM_PLACEHOLDER = "@\\{params}";
+    public static final String RESPONSE_TYPE_PLACEHOLDER = "@\\{responseType}";
+    public static final String BASIC_RESPONSE_TYPE_PLACEHOLDER = "@\\{basicResponseType}";
+    public static final String QUERY_ARGS_PLACEHOLDER = "@\\{queryArgs}";
+    public static final String URL_PLACEHOLDER = "@\\{url}";
+    public static final String RESOURCE_FUNCTIONS_PLACEHOLDER = "@\\{resourceFunctions}";
+    public static final String MATCH_CLIENT_STATEMENTS_PLACEHOLDER = "@\\{matchClientStatements}";
+    public static final String PORT_PLACEHOLDER = "@\\{port}";
+    public static final String CONFIGURABLE_PORT_STATEMENT = "configurable int PORT = " + PORT_PLACEHOLDER + ";";
+    public static final String INITIAL_RESULT = "@\\{initialResult}";
+    public static final String INITIAL_RESULT_ASSIGNMENT = "@\\{initialResultAssignment}";
+    public static final String BALLERINA_LOG_IMPORT_STATEMENT = "import ballerina/log;";
+    public static final String GRAPHQL_CLIENT_DECLARATION_STATEMENT =
+            "final graphql:Client " + CLIENT_NAME_PLACEHOLDER +
+                    "_CLIENT = check new graphql:Client(\"" + URL_PLACEHOLDER + "\");";
+    public static final String MATCH_CLIENT_STATEMENT_TEMPLATE =
+            "\"" + CLIENT_NAME_VALUE_PLACEHOLDER + "\" => {return " + CLIENT_NAME_PLACEHOLDER + "_CLIENT;}";
+    public static final String RESOURCE_FUNCTION_TEMPLATE_FILE = "resource_function.bal.partial";
+    public static final String SCALAR_RETURN_TYPE_RESOURCE_FUNCTION_TEMPLATE_FILE =
+            "scalar_return_type_resource_function.bal.partial";
+    public static final String REMOTE_FUNCTION_TEMPLATE_FILE = "remote_function.bal.partial";
+    public static final String SCALAR_RETURN_TYPE_REMOTE_FUNCTION_TEMPLATE_FILE =
+            "scalar_return_type_remote_function.bal.partial";
+    public static final String GET_CLIENT_FUNCTION_TEMPLATE_FILE = "get_client_function.bal.partial";
+    public static final String SERVICE_DECLARATION_TEMPLATE_FILE = "service_declaration.bal.partial";
+
+
     private final GatewayProject project;
     private final Map<String, JoinGraph> joinGraphs;
 
@@ -165,7 +171,7 @@ public class GatewayServiceGenerator {
                 template = Files.readString(getResourceTemplateFilePath(project.getTempDir(),
                         RESOURCE_FUNCTION_TEMPLATE_FILE));
             }
-            type = "Query";
+            type = CommonUtils.TYPE_QUERY;
         } else if (functionType == FunctionType.MUTATION) {
             if (CommonUtils.isScalarType(returnType)) {
                 template = Files.readString(getResourceTemplateFilePath(project.getTempDir(),
@@ -174,7 +180,7 @@ public class GatewayServiceGenerator {
                 template = Files.readString(getResourceTemplateFilePath(project.getTempDir(),
                         REMOTE_FUNCTION_TEMPLATE_FILE));
             }
-            type = "Mutation";
+            type = CommonUtils.TYPE_MUTATION;
         } else {
             throw new GatewayGenerationException("Unsupported function type");
         }
@@ -247,8 +253,8 @@ public class GatewayServiceGenerator {
     private String getClientNameFromFieldDefinition(GraphQLFieldDefinition graphQLFieldDefinition, String parentType)
             throws GatewayGenerationException {
         for (GraphQLAppliedDirective directive : graphQLFieldDefinition.getAppliedDirectives()) {
-            Object value = directive.getArgument("graph").getArgumentValue().getValue();
-            if (directive.getName().equals("join__field") && value instanceof EnumValue) {
+            Object value = directive.getArgument(CommonUtils.ARGUMENT_GRAPH).getArgumentValue().getValue();
+            if (directive.getName().equals(CommonUtils.DIRECTIVE_JOIN_FIELD) && value instanceof EnumValue) {
                 return ((EnumValue) value).getName();
             }
         }
@@ -256,8 +262,8 @@ public class GatewayServiceGenerator {
         List<GraphQLAppliedDirective> appliedDirectivesOnParent =
                 SpecReader.getObjectTypeDirectives(project.getSchema(), parentType);
         for (GraphQLAppliedDirective directive : appliedDirectivesOnParent) {
-            Object value = directive.getArgument("graph").getArgumentValue().getValue();
-            if (directive.getName().equals("join__type") && value instanceof EnumValue) {
+            Object value = directive.getArgument(CommonUtils.ARGUMENT_GRAPH).getArgumentValue().getValue();
+            if (directive.getName().equals(CommonUtils.DIRECTIVE_JOIN_TYPE) && value instanceof EnumValue) {
                 return ((EnumValue) value).getName();
             }
         }
