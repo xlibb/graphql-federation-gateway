@@ -12,7 +12,7 @@ if ! command -v bal &>/dev/null; then
 fi
 
 jar_file="./ballerina/target/bin/graphql_federation_gateway.jar"
-jar_url="https://github.com/Ishad-M-I-M/graphql-federation-gateway/releases/download/v0.1.0/graphql_federation_gateway.jar"
+jar_url="https://github.com/xlibb/graphql-federation-gateway/releases/download/v0.1.0/graphql_federation_gateway.jar"
 
 if [[ ! -f $jar_file ]]; then
   wget -O $jar_file $jar_url
@@ -38,8 +38,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Set default values if arguments are not provided
-outputPath=$(mktemp -d)
-port=${port:-9090}
+outputPath = $(mktemp -d)
+port = ${port:-9090}
 
 # Execute the jar with the provided input values
 result=$(
