@@ -1,0 +1,9 @@
+query{
+    missions{
+        designation
+        crew{
+            id
+            name
+        }
+    }
+}

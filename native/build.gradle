@@ -1,0 +1,227 @@
+/*
+ * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+import org.apache.tools.ant.taskdefs.condition.Os
+
+plugins {
+    id 'java'
+    id 'checkstyle'
+    id 'com.github.spotbugs'
+    id 'de.undercouch.download'
+}
+
+apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "jacoco"
+
+description = 'Ballerina - Federation Gateway'
+
+configurations {
+    dist {
+        transitive true
+    }
+}
+
+dependencies {
+    checkstyle project(':checkstyle')
+    checkstyle "com.puppycrawl.tools:checkstyle:${checkstylePluginVersion}"
+    implementation "org.ballerinalang:ballerina-lang:${ballerinaLangVersion}"
+    implementation "org.ballerinalang:ballerina-runtime:${ballerinaLangVersion}"
+    implementation "org.ballerinalang:ballerina-tools-api:${ballerinaLangVersion}"
+    implementation "org.ballerinalang:ballerina-parser:${ballerinaLangVersion}"
+    implementation "org.ballerinalang:formatter-core:${ballerinaLangVersion}"
+    implementation "commons-io:commons-io:${commonsIoVersion}"
+    implementation "com.graphql-java:graphql-java:${graphqlJavaVersion}"
+    implementation "com.graphql-java:graphql-java-extended-scalars:${graphqlJavaExtendedScalarVersion}"
+    testImplementation "org.testng:testng:${testngVersion}"
+}
+
+def excludePattern = '**/module-info.java'
+tasks.withType(Checkstyle) {
+    exclude excludePattern
+}
+
+checkstyle {
+    toolVersion "${project.checkstylePluginVersion}"
+    configFile rootProject.file("build-config/checkstyle/build/checkstyle.xml")
+    configProperties = ["suppressionFile": file("${rootDir}/build-config/checkstyle/build/suppressions.xml")]
+}
+
+checkstyleMain.dependsOn(":checkstyle:downloadCheckstyleRuleFiles")
+
+spotbugsMain {
+    effort "max"
+    reportLevel "low"
+    reportsDir = file("$project.buildDir/reports/spotbugs")
+    reports {
+        html.enabled true
+        text.enabled = true
+    }
+    def excludeFile = file("${rootDir}/spotbugs-exclude.xml")
+    if (excludeFile.exists()) {
+        excludeFilter = excludeFile
+    }
+}
+
+spotbugsTest {
+    enabled = false
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+    reportsDirectory = file("$rootProject.projectDir/build/reports/jacoco")
+}
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+    reports {
+        xml.required = true
+    }
+}
+
+compileJava {
+    doFirst {
+        options.compilerArgs = [
+                '--module-path', classpath.asPath,
+        ]
+        classpath = files()
+    }
+}
+
+task downloadBallerinaDist(type: Download) {
+    dependsOn {
+        checkBallerinaVersion
+    }
+
+    onlyIf {
+        checkBallerinaVersion.shouldDownload
+    }
+
+    doFirst {
+        println "Ballerina distribution version ${ballerinaLangVersion} not installed."
+        File distribution = new File("${project.rootDir}/ballerina-dist/ballerina-${ballerinaLangVersion}-swan-lake.zip")
+        if (distribution.exists()){
+            println "Using already downloaded distribution"
+        } else {
+            println "Downloading Ballerina distribution version ${ballerinaLangVersion}"
+        }
+    }
+
+    src "https://dist.ballerina.io/downloads/${ballerinaLangVersion}/ballerina-${ballerinaLangVersion}-swan-lake.zip"
+    overwrite false
+    onlyIfNewer true
+    dest "${project.rootDir}/ballerina-dist"
+
+    doLast {
+        println "Ballerina distribution downloaded successfully."
+    }
+}
+
+task getBalHomePath {
+    dependsOn {
+        extractBallerinaDist
+    }
+    doLast {
+        if (checkBallerinaVersion.shouldDownload) {
+            getBalHomePath.ext.balHomePath =
+                    "${project.rootDir}/build/ballerina-${ballerinaLangVersion}-swan-lake/distributions/ballerina-${ballerinaLangVersion}"
+        } else {
+            getBalHomePath.ext.balHomePath =
+                    "${System.getenv("BALLERINA_HOME")}/distributions/ballerina-${ballerinaLangVersion}"
+        }
+    }
+}
+
+task extractBallerinaDist(type: Copy) {
+    dependsOn downloadBallerinaDist
+    onlyIf {
+        checkBallerinaVersion.shouldDownload
+    }
+    doFirst {
+        println "Extracting Ballerina distribution..."
+    }
+
+    def fileName = "ballerina-${ballerinaLangVersion}-swan-lake"
+    from zipTree("${project.rootDir}/ballerina-dist/${fileName}.zip")
+    into "${project.rootDir}/build"
+    doLast {
+        println "Ballerina distribution extracted successfully."
+    }
+}
+
+task checkBallerinaVersion(type: Exec) {
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd', '/c', 'bal', '--version'
+    } else {
+        commandLine 'bash', 'bal', '--version'
+    }
+
+    standardOutput = new ByteArrayOutputStream()
+    ignoreExitValue = true
+
+    doLast {
+        String output = standardOutput.toString().trim()
+        println "Ballerina distribution check result: $output"
+        standardOutput = System.out
+        if (executionResult.get().exitValue != 0 || !output.contains(ballerinaLangVersion)
+                || System.getenv("BALLERINA_HOME") == null) {
+            checkBallerinaVersion.ext.shouldDownload = true
+        } else {
+            checkBallerinaVersion.ext.shouldDownload = false
+        }
+    }
+}
+
+def disabledGroups = ""
+
+task initializeVariables {
+    if (project.hasProperty("disable")) {
+        disabledGroups = project.findProperty("disable")
+    }
+}
+
+test {
+    dependsOn {
+        initializeVariables
+        getBalHomePath
+    }
+    doFirst {
+        println "Ballerina Home Path: ${getBalHomePath.balHomePath}"
+        systemProperties = [
+                "target.dir"    : project.buildDir,
+                "ballerina.home": getBalHomePath.balHomePath
+        ]
+    }
+
+    testLogging {
+        showStackTraces = true
+        showStandardStreams = true
+    }
+
+    useTestNG {
+        excludeGroups(disabledGroups)
+        suites "src/test/resources/testng.xml"
+    }
+    finalizedBy jacocoTestReport
+}
+
+clean {
+    delete("${projectDir}/src/test/resources/sample_subgraph_services/astronaut_service/target")
+    delete("${projectDir}/src/test/resources/sample_subgraph_services/missions_service/target")
+}
+
+jacocoTestReport.dependsOn test
+build.dependsOn jacocoTestReport
