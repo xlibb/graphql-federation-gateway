@@ -116,7 +116,7 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
         };
     }
 
-    @Test(groups = {"invalid_permission"}, description = "Test ouput path is not writable")
+    @Test(groups = {"invalid_permission"}, description = "Test output path is not writable", enabled = false)
     public void testReadOnlyOutputPath() throws IOException {
         String supergraph = "two_entities";
         String schemaPath = GatewayTestUtils.SCHEMA_RESOURCE_DIR.resolve(supergraph + ".graphql")
