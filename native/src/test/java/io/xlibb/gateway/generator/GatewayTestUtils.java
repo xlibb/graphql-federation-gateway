@@ -175,7 +175,7 @@ public class GatewayTestUtils {
         BuildProject buildProject = BuildProject.load(projectPath, buildOptions);
         checkDiagnosticResultsForErrors(buildProject.currentPackage().runCodeGenAndModifyPlugins());
         PackageCompilation packageCompilation = buildProject.currentPackage().getCompilation();
-        JBallerinaBackend jBallerinaBackend = JBallerinaBackend.from(packageCompilation, JvmTarget.JAVA_11);
+        JBallerinaBackend jBallerinaBackend = JBallerinaBackend.from(packageCompilation, JvmTarget.JAVA_17);
         checkDiagnosticResultsForErrors(jBallerinaBackend.diagnosticResult());
         Path executablePath = targetPath.resolve(executableName + ".jar");
         jBallerinaBackend.emit(JBallerinaBackend.OutputType.EXEC, executablePath);
