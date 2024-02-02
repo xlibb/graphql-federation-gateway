@@ -49,7 +49,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static io.ballerina.compiler.syntax.tree.AbstractNodeFactory.createEmptyMinutiaeList;
 import static io.ballerina.compiler.syntax.tree.AbstractNodeFactory.createEmptyNodeList;
@@ -331,20 +330,22 @@ public class GatewayQueryPlanGenerator {
 
     private String getKeyOfJoinTypeArgument(String name, GraphQLAppliedDirective directive)
             throws GatewayGenerationException {
-        try {
-            for (GraphQLAppliedDirectiveArgument argument : directive.getArguments()) {
+        for (GraphQLAppliedDirectiveArgument argument : directive.getArguments()) {
                 if (argument.getName().equals(ARGUMENT_KEY)) {
-                    return ((StringValue) Objects.requireNonNull(argument.getArgumentValue().getValue())).getValue();
+                        Object argumentValue = argument.getArgumentValue().getValue();
+                        if (argumentValue == null) {
+                                break;
+                        } 
+                        return ((StringValue) argumentValue).getValue();
                 }
-            }
-        } catch (NullPointerException e) {
-            for (FieldData field :
-                    schemaTypes.getFieldsOfType(name)) {
-                if (field.isID()) {
-                    return field.getFieldName();
-                }
-            }
         }
+
+        for (FieldData field : schemaTypes.getFieldsOfType(name)) {
+                if (field.isID()) {
+                        return field.getFieldName();
+                }
+        }
+
         throw new GatewayGenerationException("No key argument found in @join__type directive");
     }
 
