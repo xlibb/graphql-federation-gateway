@@ -188,4 +188,9 @@ public class GatewayTestUtils {
             throw new GatewayGenerationException("Error while generating the executable.");
         }
     }
+
+    public static String readWithLF(Path filePath) throws IOException {
+        String codeSrc = Files.readString(filePath);
+        return codeSrc.replace("\n", System.lineSeparator());
+    }
 }

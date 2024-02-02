@@ -49,7 +49,7 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
             throws ValidationException, IOException, GatewayGenerationException {
         GraphQLSchema graphQLSchema = GatewayTestUtils.getGatewayProject(supergraphFileName, tmpDir).getSchema();
         String generatedSrc = (new GatewayQueryPlanGenerator(graphQLSchema)).generateSrc();
-        String expectedSrc = Files.readString(expectedResources.resolve(
+        String expectedSrc = GatewayTestUtils.readWithLF(expectedResources.resolve(
                 Paths.get(supergraphFileName, "query_plan.bal")));
         Assert.assertEquals(generatedSrc, expectedSrc);
     }
@@ -60,7 +60,7 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
 
         GatewayProject project = GatewayTestUtils.getGatewayProject(supergraphFileName, tmpDir);
         String generatedSrc = (new GatewayServiceGenerator(project)).generateSrc();
-        String expectedSrc = Files.readString(expectedResources.resolve(
+        String expectedSrc = GatewayTestUtils.readWithLF(expectedResources.resolve(
                 Paths.get(supergraphFileName, "service.bal")));
         Assert.assertEquals(generatedSrc, expectedSrc);
     }
@@ -71,7 +71,7 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
         GatewayProject project = GatewayTestUtils.getGatewayProject(supergraphFileName, tmpDir);
         GraphQLSchema graphQLSchema = project.getSchema();
         String generatedSrc = (new GatewayTypeGenerator(graphQLSchema)).generateSrc();
-        String expectedSrc = Files.readString(expectedResources.resolve(
+        String expectedSrc = GatewayTestUtils.readWithLF(expectedResources.resolve(
                 Paths.get(supergraphFileName, "types.bal")));
         Assert.assertEquals(generatedSrc, expectedSrc);
     }
