@@ -9,37 +9,37 @@ repository = "https://github.com/xlibb/graphql-federation-gateway"
 license = ["Apache-2.0"]
 distribution = "@ballerina.lang.version@"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "io.xlibb.gateway"
 artifactId = "gateway-native"
 version = "@toml.version@"
 path = "../native/build/libs/gateway-native-@project.version@.jar"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "com.graphql-java"
 artifactId = "graphql-java"
 version = "@graphql.java.version@"
 path="./lib/graphql-java-@graphql.java.version@.jar"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "com.graphql-java"
 artifactId = "graphql-java-extended-scalars"
 version = "@graphql.java.extended.scalars.version@"
 path="./lib/graphql-java-extended-scalars-@graphql.java.extended.scalars.version@.jar"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "commons-io"
 artifactId = "commons-io"
 version = "@commons.io.version@"
 path="./lib/commons-io-@commons.io.version@.jar"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "org.ballerinalang"
 artifactId = "formatter-core"
 version = "@ballerina.lang.version@"
 path="./lib/formatter-core-@ballerina.lang.version@.jar"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "org.ballerinalang"
 artifactId = "ballerina-parser"
 version = "@ballerina.lang.version@"
