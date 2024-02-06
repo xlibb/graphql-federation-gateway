@@ -1,4 +1,4 @@
-isolated resource function get @{query}(graphql:Field 'field, graphql:Context context @{params}) returns @{responseType}|error {
+@{deprecatedDirective}isolated resource function get @{query}(graphql:Field 'field, graphql:Context context @{params}) returns @{responseType}|error {
     string queryString = wrapwithQuery("@{query}", () @{queryArgs});
     @{query}Response|graphql:ClientError response = @{clientName}_CLIENT->execute(queryString);
     if response is graphql:ClientError {

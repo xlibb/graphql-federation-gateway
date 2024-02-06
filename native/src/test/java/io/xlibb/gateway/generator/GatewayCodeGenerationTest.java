@@ -101,7 +101,8 @@ public class GatewayCodeGenerationTest extends GraphqlTest {
         return new Object[][]{
                 {"two_entities"},
                 {"two_entities_with_id_type_fields"},
-                {"three_entities"}
+                {"three_entities"},
+                {"deprecated_directive"}
         };
     }
 
