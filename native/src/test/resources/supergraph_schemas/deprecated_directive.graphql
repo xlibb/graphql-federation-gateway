@@ -74,10 +74,10 @@ type Product @join__type(graph: PRODUCTS, key: "id") {
 type Query @join__type(graph: PRODUCTS) {
     products: [Product!]! @deprecated
     product(id: ID!): Product
-    person(id: ID): String @deprecated
+    person(id: ID): String @deprecated(reason: "`person` will be removed in the future")
 }
 
 type Mutation @join__type(graph: PRODUCTS) {
     addProduct(name: String): Product @join__field(graph: PRODUCTS) @deprecated
-    addPerson(id: ID): String! @join__field(graph: PRODUCTS) @deprecated
+    addPerson(id: ID): String! @join__field(graph: PRODUCTS) @deprecated(reason: "`addPerson` will be removed in the future")
 }

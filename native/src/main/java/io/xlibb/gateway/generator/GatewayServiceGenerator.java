@@ -20,6 +20,7 @@ package io.xlibb.gateway.generator;
 
 import graphql.language.EnumValue;
 import graphql.language.InputValueDefinition;
+import graphql.language.StringValue;
 import graphql.schema.GraphQLAppliedDirective;
 import graphql.schema.GraphQLAppliedDirectiveArgument;
 import graphql.schema.GraphQLArgument;
@@ -59,6 +60,8 @@ import static io.xlibb.gateway.generator.CommonUtils.CLIENT_NAME_PLACEHOLDER;
 import static io.xlibb.gateway.generator.CommonUtils.CLIENT_NAME_VALUE_PLACEHOLDER;
 import static io.xlibb.gateway.generator.CommonUtils.DIRECTIVE_JOIN_FIELD;
 import static io.xlibb.gateway.generator.CommonUtils.DIRECTIVE_JOIN_TYPE;
+import static io.xlibb.gateway.generator.CommonUtils.GRAPHQL_DEPRECATED_DIRECTIVE;
+import static io.xlibb.gateway.generator.CommonUtils.GRAPHQL_DEPRECATED_DIRECTIVE_DEFAULT_REASON;
 import static io.xlibb.gateway.generator.CommonUtils.TYPE_MUTATION;
 import static io.xlibb.gateway.generator.CommonUtils.TYPE_QUERY;
 import static io.xlibb.gateway.generator.CommonUtils.getJoinGraphs;
@@ -256,7 +259,15 @@ public class GatewayServiceGenerator {
     }
     
     private String getDeprecationStatus(GraphQLFieldDefinition fieldDefinition) {
-        return fieldDefinition.getAllAppliedDirectivesByName().containsKey("deprecated") ? "@deprecated\n" : "";
+        if (!fieldDefinition.getAllAppliedDirectivesByName().containsKey(GRAPHQL_DEPRECATED_DIRECTIVE)) {
+            return "";
+        }
+        GraphQLAppliedDirective deprecatedDirective = fieldDefinition.getAppliedDirectives(GRAPHQL_DEPRECATED_DIRECTIVE)
+                                                                                                            .get(0);
+        Object reasonArgumentValue = deprecatedDirective.getArgument("reason").getArgumentValue().getValue();
+        String reason = reasonArgumentValue == null ? GRAPHQL_DEPRECATED_DIRECTIVE_DEFAULT_REASON : 
+                                                      ((StringValue) reasonArgumentValue).getValue();
+        return String.format("# # Deprecated%n# %s%n@%s%n", reason, GRAPHQL_DEPRECATED_DIRECTIVE);
     }
 
     private String getClientNameFromFieldDefinition(GraphQLFieldDefinition graphQLFieldDefinition, String parentType)

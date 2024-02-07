@@ -21,6 +21,8 @@ isolated service on new graphql:Listener(PORT) {
         log:printInfo(string `💃 Server ready at port: ${PORT}`);
     }
 
+    # # Deprecated
+    # No longer supported
     @deprecated
     isolated resource function get products(graphql:Field 'field, graphql:Context context) returns Product[]|error {
         QueryFieldClassifier classifier = new ('field, queryPlan, PRODUCTS);
@@ -62,6 +64,8 @@ isolated service on new graphql:Listener(PORT) {
         return finalResult.cloneWithType();
     }
 
+    # # Deprecated
+    # `person` will be removed in the future
     @deprecated
     isolated resource function get person(graphql:Field 'field, graphql:Context context, string? id) returns string?|error {
         string queryString = wrapwithQuery("person", (), {"id": getParamAsString(id)});
@@ -71,6 +75,8 @@ isolated service on new graphql:Listener(PORT) {
         }
         return response.data.person;
     }
+    # # Deprecated
+    # No longer supported
     @deprecated
     isolated remote function addProduct(graphql:Field 'field, graphql:Context context, string? name) returns Product?|error {
         QueryFieldClassifier classifier = new ('field, queryPlan, PRODUCTS);
@@ -90,6 +96,8 @@ isolated service on new graphql:Listener(PORT) {
         return finalResult.cloneWithType();
     }
 
+    # # Deprecated
+    # `addPerson` will be removed in the future
     @deprecated
     isolated remote function addPerson(graphql:Field 'field, graphql:Context context, string? id) returns string|error {
         string queryString = wrapwithMutation("addPerson", (), {"id": getParamAsString(id)});
