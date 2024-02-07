@@ -10,9 +10,9 @@ This will generate a gateway executable for a given supergraph schema.
 ## Using the Gateway
 
 ### Prerequisites
-1.  Download and install Java SE Development Kit (JDK) version 11 (from one of the following locations).
+1.  Download and install Java SE Development Kit (JDK) version 17 (from one of the following locations).
 
-    - [Oracle](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
+    - [Oracle](https://www.oracle.com/java/technologies/downloads/#java17)
 
     - [OpenJDK](https://adoptopenjdk.net/)
 
@@ -56,9 +56,9 @@ query {
 ## Build from the source.
 
 ### Setup the prerequisites
-1.  Download and install Java SE Development Kit (JDK) version 11 (from one of the following locations).
+1.  Download and install Java SE Development Kit (JDK) version 17 (from one of the following locations).
 
-    - [Oracle](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
+    - [Oracle](https://www.oracle.com/java/technologies/downloads/#java17)
 
     - [OpenJDK](https://adoptopenjdk.net/)
 

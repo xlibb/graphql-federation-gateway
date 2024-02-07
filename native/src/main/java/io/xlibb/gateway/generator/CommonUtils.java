@@ -72,6 +72,9 @@ public class CommonUtils {
     public static final String GRAHQL_TYPE_FLOAT = "Float";
     public static final String GRAHQL_TYPE_BOOLEAN = "Boolean";
 
+    public static final String GRAPHQL_DEPRECATED_DIRECTIVE = "deprecated";
+    public static final String GRAPHQL_DEPRECATED_DIRECTIVE_DEFAULT_REASON = "No longer supported";
+
     public static final String BALLERINA_TYPE_INT = "int";
     public static final String BALLERINA_TYPE_FLOAT = "float";
     public static final String BALLERINA_TYPE_BOOLEAN = "boolean";

@@ -1,4 +1,4 @@
-isolated remote function @{query}(graphql:Field 'field, graphql:Context context @{params}) returns @{responseType}|error{
+@{deprecatedDirective}isolated remote function @{query}(graphql:Field 'field, graphql:Context context @{params}) returns @{responseType}|error{
     QueryFieldClassifier classifier = new ('field, queryPlan, @{clientName});
     string fieldString = classifier.getFieldString();
     UnresolvableField[] propertiesNotResolved = classifier.getUnresolvableFields();
