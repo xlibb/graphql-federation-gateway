@@ -9,3 +9,4 @@
 
 # Ensure all Java files use LF.
 *.java eol=lf
+*.bal eol=lf
