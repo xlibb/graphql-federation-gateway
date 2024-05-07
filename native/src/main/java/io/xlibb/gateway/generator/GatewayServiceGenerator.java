@@ -116,7 +116,7 @@ public class GatewayServiceGenerator {
     public String generateSrc() throws GatewayGenerationException {
         try {
             SyntaxTree syntaxTree = generateSyntaxTree();
-            return Formatter.format(syntaxTree).toString();
+            return Formatter.format(syntaxTree).toSourceCode();
         } catch (IOException | FormatterException e) {
             throw new GatewayGenerationException("Error while generating the gateway services");
         }
