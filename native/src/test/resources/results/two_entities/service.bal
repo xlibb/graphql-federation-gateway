@@ -73,6 +73,7 @@ isolated service on new graphql:Listener(PORT) {
         }
         return response.data.serviceName;
     }
+
     isolated resource function get isExist(graphql:Field 'field, graphql:Context context, string name) returns boolean|error {
         string queryString = wrapwithQuery("isExist", (), {"name": getParamAsString(name)});
         isExistResponse|graphql:ClientError response = ASTRONAUTS_CLIENT->execute(queryString);
@@ -81,6 +82,7 @@ isolated service on new graphql:Listener(PORT) {
         }
         return response.data.isExist;
     }
+
     isolated resource function get missions(graphql:Field 'field, graphql:Context context) returns Mission[]|error {
         QueryFieldClassifier classifier = new ('field, queryPlan, MISSIONS);
         string fieldString = classifier.getFieldString();
