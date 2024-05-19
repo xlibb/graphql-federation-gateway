@@ -7,7 +7,7 @@ export=["graphql_federation_gateway"]
 keywords = ["graphql", "federation", "gateway"]
 repository = "https://github.com/xlibb/graphql-federation-gateway"
 license = ["Apache-2.0"]
-distribution = "2201.8.4"
+distribution = "2201.9.0"
 
 [[platform.java17.dependency]]
 groupId = "io.xlibb.gateway"
@@ -36,11 +36,11 @@ path="./lib/commons-io-2.12.0.jar"
 [[platform.java17.dependency]]
 groupId = "org.ballerinalang"
 artifactId = "formatter-core"
-version = "2201.8.4"
-path="./lib/formatter-core-2201.8.4.jar"
+version = "2201.9.0"
+path="./lib/formatter-core-2201.9.0-20240518-004500-24efc8e3.jar"
 
 [[platform.java17.dependency]]
 groupId = "org.ballerinalang"
 artifactId = "ballerina-parser"
-version = "2201.8.4"
-path="./lib/ballerina-parser-2201.8.4.jar"
+version = "2201.9.0"
+path="./lib/ballerina-parser-2201.9.0.jar"
