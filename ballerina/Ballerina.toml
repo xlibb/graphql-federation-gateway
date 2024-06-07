@@ -37,7 +37,7 @@ path="./lib/commons-io-2.12.0.jar"
 groupId = "org.ballerinalang"
 artifactId = "formatter-core"
 version = "2201.9.0"
-path="./lib/formatter-core-2201.8.6.jar"
+path="./lib/formatter-core-2201.10.0-20240607-004500-fcab4970.jar"
 
 [[platform.java17.dependency]]
 groupId = "org.ballerinalang"
