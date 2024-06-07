@@ -74,10 +74,11 @@ task ballerinaBuild {
         exec {
             workingDir project.projectDir
             environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
+            def balHomePath = "${project(':gateway-native').ext.balHomePath}/bin"
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine 'cmd', '/c', "${distributionBinPath}/bal.bat build && exit %%ERRORLEVEL%%"
+                commandLine 'cmd', '/c', "\"${balHomePath}/bal.bat\" build && exit %%ERRORLEVEL%%"
             } else {
-                commandLine 'sh', '-c', "${distributionBinPath}/bal build"
+                commandLine 'sh', '-c', "${balHomePath}/bal build"
             }
         }
     }
