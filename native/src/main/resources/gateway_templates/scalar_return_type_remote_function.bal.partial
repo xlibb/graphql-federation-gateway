@@ -1,4 +1,4 @@
-isolated remote function @{query}(graphql:Field 'field, graphql:Context context @{params}) returns @{responseType}|error {
+@{deprecatedDirective}isolated remote function @{query}(graphql:Field 'field, graphql:Context context @{params}) returns @{responseType}|error {
     string queryString = wrapwithMutation("@{query}", () @{queryArgs});
     @{query}Response|graphql:ClientError response = @{clientName}_CLIENT->execute(queryString);
     if response is graphql:ClientError {

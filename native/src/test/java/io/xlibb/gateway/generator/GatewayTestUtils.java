@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+ *  Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org).
  *
  *  WSO2 Inc. licenses this file to you under the Apache License,
  *  Version 2.0 (the "License"); you may not use this file except
@@ -175,7 +175,7 @@ public class GatewayTestUtils {
         BuildProject buildProject = BuildProject.load(projectPath, buildOptions);
         checkDiagnosticResultsForErrors(buildProject.currentPackage().runCodeGenAndModifyPlugins());
         PackageCompilation packageCompilation = buildProject.currentPackage().getCompilation();
-        JBallerinaBackend jBallerinaBackend = JBallerinaBackend.from(packageCompilation, JvmTarget.JAVA_11);
+        JBallerinaBackend jBallerinaBackend = JBallerinaBackend.from(packageCompilation, JvmTarget.JAVA_17);
         checkDiagnosticResultsForErrors(jBallerinaBackend.diagnosticResult());
         Path executablePath = targetPath.resolve(executableName + ".jar");
         jBallerinaBackend.emit(JBallerinaBackend.OutputType.EXEC, executablePath);
@@ -187,5 +187,10 @@ public class GatewayTestUtils {
         if (diagnosticResult.hasErrors()) {
             throw new GatewayGenerationException("Error while generating the executable.");
         }
+    }
+
+    public static String readWithLF(Path filePath) throws IOException {
+        String codeSrc = Files.readString(filePath);
+        return codeSrc.replace("\n", System.lineSeparator());
     }
 }

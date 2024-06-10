@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org). All Rights Reserved.
+ * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -71,6 +71,9 @@ public class CommonUtils {
     public static final String GRAHQL_TYPE_INT = "Int";
     public static final String GRAHQL_TYPE_FLOAT = "Float";
     public static final String GRAHQL_TYPE_BOOLEAN = "Boolean";
+
+    public static final String GRAPHQL_DEPRECATED_DIRECTIVE = "deprecated";
+    public static final String GRAPHQL_DEPRECATED_DIRECTIVE_DEFAULT_REASON = "No longer supported";
 
     public static final String BALLERINA_TYPE_INT = "int";
     public static final String BALLERINA_TYPE_FLOAT = "float";

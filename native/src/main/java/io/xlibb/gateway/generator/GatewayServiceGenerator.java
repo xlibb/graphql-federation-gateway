@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org). All Rights Reserved.
+ * Copyright (c) 2023, WSO2 LLC. (http://www.wso2.org).
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -20,7 +20,9 @@ package io.xlibb.gateway.generator;
 
 import graphql.language.EnumValue;
 import graphql.language.InputValueDefinition;
+import graphql.language.StringValue;
 import graphql.schema.GraphQLAppliedDirective;
+import graphql.schema.GraphQLAppliedDirectiveArgument;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLSchemaElement;
@@ -58,6 +60,8 @@ import static io.xlibb.gateway.generator.CommonUtils.CLIENT_NAME_PLACEHOLDER;
 import static io.xlibb.gateway.generator.CommonUtils.CLIENT_NAME_VALUE_PLACEHOLDER;
 import static io.xlibb.gateway.generator.CommonUtils.DIRECTIVE_JOIN_FIELD;
 import static io.xlibb.gateway.generator.CommonUtils.DIRECTIVE_JOIN_TYPE;
+import static io.xlibb.gateway.generator.CommonUtils.GRAPHQL_DEPRECATED_DIRECTIVE;
+import static io.xlibb.gateway.generator.CommonUtils.GRAPHQL_DEPRECATED_DIRECTIVE_DEFAULT_REASON;
 import static io.xlibb.gateway.generator.CommonUtils.TYPE_MUTATION;
 import static io.xlibb.gateway.generator.CommonUtils.TYPE_QUERY;
 import static io.xlibb.gateway.generator.CommonUtils.getJoinGraphs;
@@ -72,6 +76,7 @@ enum FunctionType {
  * Class to generate service code for the gateway.
  */
 public class GatewayServiceGenerator {
+    public static final String DEPRECATED_PLACEHOLDER = "@\\{deprecatedDirective}";
     public static final String QUERY_PLACEHOLDER = "@\\{query}";
     public static final String FUNCTION_PARAM_PLACEHOLDER = "@\\{params}";
     public static final String RESPONSE_TYPE_PLACEHOLDER = "@\\{responseType}";
@@ -111,7 +116,7 @@ public class GatewayServiceGenerator {
     public String generateSrc() throws GatewayGenerationException {
         try {
             SyntaxTree syntaxTree = generateSyntaxTree();
-            return Formatter.format(syntaxTree).toString();
+            return Formatter.format(syntaxTree).toSourceCode();
         } catch (IOException | FormatterException e) {
             throw new GatewayGenerationException("Error while generating the gateway services");
         }
@@ -205,19 +210,17 @@ public class GatewayServiceGenerator {
                             "mergeToResultJson(result, <map<json>>response.data.@{query}.toJson());");
         }
 
-        return template.replaceAll(QUERY_PLACEHOLDER,
-                        ((GraphQLFieldDefinition) graphQLSchemaElement).getName())
-                .replaceAll(FUNCTION_PARAM_PLACEHOLDER,
-                        getArgumentString(graphQLSchemaElement))
+        GraphQLFieldDefinition graphQLFieldDefinition = (GraphQLFieldDefinition) graphQLSchemaElement;
+        return template.replaceAll(QUERY_PLACEHOLDER, graphQLFieldDefinition.getName())
+                .replaceAll(FUNCTION_PARAM_PLACEHOLDER, getArgumentString(graphQLSchemaElement))
                 .replaceAll(RESPONSE_TYPE_PLACEHOLDER,
-                        CommonUtils.getTypeFromGraphQLType(
-                                ((GraphQLFieldDefinition) graphQLSchemaElement).getType()))
+                        CommonUtils.getTypeFromGraphQLType(graphQLFieldDefinition.getType()))
                 .replaceAll(BASIC_RESPONSE_TYPE_PLACEHOLDER,
-                        CommonUtils.getBasicTypeNameFromGraphQLType(
-                                ((GraphQLFieldDefinition) graphQLSchemaElement).getType()))
+                        CommonUtils.getBasicTypeNameFromGraphQLType(graphQLFieldDefinition.getType()))
                 .replaceAll(CLIENT_NAME_PLACEHOLDER,
-                        getClientNameFromFieldDefinition((GraphQLFieldDefinition) graphQLSchemaElement, type))
-                .replaceAll(QUERY_ARGS_PLACEHOLDER, getQueryArguments(graphQLSchemaElement));
+                        getClientNameFromFieldDefinition(graphQLFieldDefinition, type))
+                .replaceAll(QUERY_ARGS_PLACEHOLDER, getQueryArguments(graphQLSchemaElement))
+                .replaceAll(DEPRECATED_PLACEHOLDER, getDeprecationStatus(graphQLFieldDefinition));
     }
 
     private ModuleMemberDeclarationNode getGetClientFunction()
@@ -254,11 +257,27 @@ public class GatewayServiceGenerator {
         }
         return nodes;
     }
+    
+    private String getDeprecationStatus(GraphQLFieldDefinition fieldDefinition) {
+        if (!fieldDefinition.getAllAppliedDirectivesByName().containsKey(GRAPHQL_DEPRECATED_DIRECTIVE)) {
+            return "";
+        }
+        GraphQLAppliedDirective deprecatedDirective = fieldDefinition.getAppliedDirectives(GRAPHQL_DEPRECATED_DIRECTIVE)
+                                                                                                            .get(0);
+        Object reasonArgumentValue = deprecatedDirective.getArgument("reason").getArgumentValue().getValue();
+        String reason = reasonArgumentValue == null ? GRAPHQL_DEPRECATED_DIRECTIVE_DEFAULT_REASON : 
+                                                      ((StringValue) reasonArgumentValue).getValue();
+        return String.format("# # Deprecated%n# %s%n@%s%n", reason, GRAPHQL_DEPRECATED_DIRECTIVE);
+    }
 
     private String getClientNameFromFieldDefinition(GraphQLFieldDefinition graphQLFieldDefinition, String parentType)
             throws GatewayGenerationException {
         for (GraphQLAppliedDirective directive : graphQLFieldDefinition.getAppliedDirectives()) {
-            Object value = directive.getArgument(ARGUMENT_GRAPH).getArgumentValue().getValue();
+            GraphQLAppliedDirectiveArgument appliedDirectiveArgument = directive.getArgument(ARGUMENT_GRAPH);
+            if (appliedDirectiveArgument == null) {
+                continue;
+            }
+            Object value = appliedDirectiveArgument.getArgumentValue().getValue();
             if (directive.getName().equals(DIRECTIVE_JOIN_FIELD) && value instanceof EnumValue) {
                 return ((EnumValue) value).getName();
             }
@@ -267,7 +286,11 @@ public class GatewayServiceGenerator {
         List<GraphQLAppliedDirective> appliedDirectivesOnParent =
                 SpecReader.getObjectTypeDirectives(project.getSchema(), parentType);
         for (GraphQLAppliedDirective directive : appliedDirectivesOnParent) {
-            Object value = directive.getArgument(ARGUMENT_GRAPH).getArgumentValue().getValue();
+            GraphQLAppliedDirectiveArgument appliedDirectiveArgument = directive.getArgument(ARGUMENT_GRAPH);
+            if (appliedDirectiveArgument == null) {
+                continue;
+            }
+            Object value = appliedDirectiveArgument.getArgumentValue().getValue();
             if (directive.getName().equals(DIRECTIVE_JOIN_TYPE) && value instanceof EnumValue) {
                 return ((EnumValue) value).getName();
             }
